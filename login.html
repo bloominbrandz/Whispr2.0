@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login | Whispers</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Shadows+Into+Light&display=swap" rel="stylesheet">
+
+<style>
+*{box-sizing:border-box}
+
+body{
+background:#050200;
+color:white;
+font-family:'Shadows Into Light',cursive;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+margin:0;
+}
+
+.container{
+background:rgba(255,255,255,0.05);
+padding:30px;
+border-radius:15px;
+width:320px;
+display:flex;
+flex-direction:column;
+gap:15px;
+box-shadow:0 4px 20px rgba(255,69,0,0.1);
+}
+
+h2{
+margin:0 0 10px 0;
+text-align:center;
+color:#ff4500;
+}
+
+input,button{
+padding:12px;
+border-radius:10px;
+border:1px solid rgba(255,69,0,0.3);
+background:rgba(255,255,255,0.05);
+color:white;
+outline:none;
+font-family:inherit;
+font-size:14px;
+}
+
+input:focus{
+border-color:#ff4500;
+background:rgba(255,255,255,0.08);
+}
+
+input::placeholder{
+color:rgba(255,255,255,0.4);
+}
+
+button{
+border:none;
+background:#ff4500;
+cursor:pointer;
+font-weight:bold;
+transition:all .3s ease;
+margin-top:5px;
+}
+
+button:hover{
+background:#ff6347;
+transform:translateY(-2px);
+box-shadow:0 4px 12px rgba(255,69,0,0.3);
+}
+
+button:disabled{
+background:#666;
+cursor:not-allowed;
+transform:none;
+}
+
+#msg{
+margin:0;
+font-size:12px;
+text-align:center;
+min-height:20px;
+color:#ff6347;
+}
+
+.signup-link{
+text-align:center;
+font-size:12px;
+margin-top:10px;
+color:rgba(255,255,255,0.6);
+}
+
+.signup-link a{
+color:#ff4500;
+text-decoration:none;
+}
+
+.signup-link a:hover{
+text-decoration:underline;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>Login</h2>
+
+<input type="email" id="email" placeholder="Email">
+<input type="password" id="password" placeholder="Password">
+
+<button id="loginBtn">Login</button>
+
+<p id="msg"></p>
+
+<div class="signup-link">
+Don't have an account? <a href="signup.html">Sign Up</a>
+</div>
+
+</div>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+getAuth,
+signInWithEmailAndPassword
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+import {
+getFirestore,
+doc,
+getDoc,
+updateDoc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+
+
+const firebaseConfig = {
+apiKey: "AIzaSyBSmm2lC7iAMmQJqsG_jXi4DWpL7ghcJnc",
+authDomain: "whispr-92fc0.firebaseapp.com",
+projectId: "whispr-92fc0",
+storageBucket: "whispr-92fc0.firebasestorage.app",
+messagingSenderId: "133594748424",
+appId: "1:133594748424:web:7dc7ff44e105d2d5cee3bd",
+measurementId: "G-P7RG5XGGB1"
+};
+
+
+const app = initializeApp(firebaseConfig);
+
+const auth = getAuth(app);
+
+const db = getFirestore(app);
+
+
+
+function showMessage(text,isError=true){
+
+const msg=document.getElementById("msg");
+
+msg.textContent=text;
+
+msg.style.color=isError ? "#ff6347" : "#4CAF50";
+
+}
+
+
+
+document.getElementById("loginBtn").addEventListener("click",async()=>{
+
+const email=document.getElementById("email").value.trim().toLowerCase();
+
+const password=document.getElementById("password").value;
+
+const btn=document.getElementById("loginBtn");
+
+
+
+if(!email||!password){
+
+showMessage("All fields required");
+
+return;
+
+}
+
+
+
+btn.disabled=true;
+
+showMessage("Logging in...",false);
+
+
+
+try{
+
+const userCredential=await signInWithEmailAndPassword(auth,email,password);
+
+const user=userCredential.user;
+
+
+
+// check if profile exists
+
+const userRef=doc(db,"users",user.uid);
+
+const userSnap=await getDoc(userRef);
+
+
+
+if(userSnap.exists()){
+
+await updateDoc(userRef,{
+
+status:"online"
+
+});
+
+}
+
+
+
+showMessage("Login successful! Redirecting...",false);
+
+
+
+setTimeout(()=>{
+
+window.location.href="enter.html";
+
+},800);
+
+
+
+}catch(e){
+
+showMessage(e.message);
+
+btn.disabled=false;
+
+}
+
+});
+
+
+
+// ENTER key support
+
+document.querySelectorAll("input").forEach(input=>{
+
+input.addEventListener("keypress",(e)=>{
+
+if(e.key==="Enter"){
+
+document.getElementById("loginBtn").click();
+
+}
+
+});
+
+});
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Search Users | Whispers</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Shadows+Into+Light&display=swap" rel="stylesheet">
+
+<style>
+*{box-sizing:border-box}
+
+body{
+background:#050200;
+color:white;
+font-family:'Shadows Into Light',cursive;
+margin:0;
+display:flex;
+flex-direction:column;
+height:100vh;
+}
+
+.header{
+padding:20px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+border-bottom:1px solid rgba(255,69,0,0.2);
+background:rgba(255,69,0,0.05);
+}
+
+.header h2{
+margin:0;
+color:#ff4500;
+}
+
+.backBtn{
+background:transparent;
+border:1px solid rgba(255,69,0,0.5);
+color:#ff4500;
+padding:8px 12px;
+border-radius:8px;
+cursor:pointer;
+font-family:inherit;
+font-weight:bold;
+}
+
+.searchBox{
+padding:20px;
+display:flex;
+gap:10px;
+}
+
+input{
+flex:1;
+padding:12px 15px;
+border-radius:25px;
+border:1px solid rgba(255,69,0,0.3);
+background:rgba(255,255,255,0.05);
+color:white;
+outline:none;
+font-family:inherit;
+}
+
+button{
+padding:12px 20px;
+border-radius:25px;
+border:none;
+background:#ff4500;
+color:white;
+cursor:pointer;
+font-weight:bold;
+}
+
+.results{
+flex:1;
+overflow-y:auto;
+padding:0 20px 20px;
+}
+
+.userItem{
+padding:15px;
+border-radius:10px;
+margin-bottom:10px;
+background:rgba(255,255,255,0.03);
+border:1px solid rgba(255,69,0,0.1);
+cursor:pointer;
+display:flex;
+align-items:center;
+gap:15px;
+}
+
+.avatar{
+width:50px;
+height:50px;
+border-radius:50%;
+object-fit:cover;
+}
+
+.userInfo{
+flex:1;
+}
+
+.username{
+font-weight:bold;
+font-size:16px;
+}
+
+.email{
+font-size:12px;
+color:rgba(255,255,255,0.6);
+}
+
+.emptyState{
+text-align:center;
+padding:40px;
+color:rgba(255,255,255,0.4);
+}
+
+#msg{
+text-align:center;
+padding:10px;
+color:#ff6347;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+<button class="backBtn" onclick="window.location.href='message.html'">← Back</button>
+<h2>Search Users</h2>
+<div style="width:60px;"></div>
+</div>
+
+<div class="searchBox">
+<input type="text" id="searchInput" placeholder="Search by username...">
+<button id="searchBtn">Search</button>
+</div>
+
+<p id="msg"></p>
+
+<div class="results" id="results">
+<div class="emptyState">Enter a username to search</div>
+</div>
+
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+getAuth,
+onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+import {
+getFirestore,
+doc,
+getDoc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+
+const firebaseConfig = {
+apiKey: "AIzaSyBSmm2lC7iAMmQJqsG_jXi4DWpL7ghcJnc",
+authDomain: "whispr-92fc0.firebaseapp.com",
+projectId: "whispr-92fc0",
+storageBucket: "whispr-92fc0.firebasestorage.app",
+messagingSenderId: "133594748424",
+appId: "1:133594748424:web:7dc7ff44e105d2d5cee3bd",
+measurementId: "G-P7RG5XGGB1"
+};
+
+const app = initializeApp(firebaseConfig);
+
+const auth = getAuth(app);
+
+const db = getFirestore(app);
+
+let currentUser = null;
+
+onAuthStateChanged(auth,(user)=>{
+
+if(!user){
+window.location.href="login.html";
+return;
+}
+
+currentUser=user;
+
+});
+
+
+function showMessage(text){
+document.getElementById("msg").textContent=text;
+}
+
+
+document.getElementById("searchBtn").addEventListener("click",async()=>{
+
+const query=document.getElementById("searchInput").value.trim().toLowerCase();
+
+const results=document.getElementById("results");
+
+const btn=document.getElementById("searchBtn");
+
+if(!query){
+showMessage("Please enter username");
+return;
+}
+
+btn.disabled=true;
+
+results.innerHTML='<div class="emptyState">Searching...</div>';
+
+try{
+
+const usernameRef=doc(db,"usernames",query);
+
+const usernameSnap=await getDoc(usernameRef);
+
+if(!usernameSnap.exists()){
+results.innerHTML='<div class="emptyState">No users found</div>';
+btn.disabled=false;
+return;
+}
+
+const foundUid=usernameSnap.data().uid;
+
+if(foundUid===currentUser.uid){
+results.innerHTML='<div class="emptyState">That\'s you!</div>';
+btn.disabled=false;
+return;
+}
+
+const userRef=doc(db,"users",foundUid);
+
+const userSnap=await getDoc(userRef);
+
+if(!userSnap.exists()){
+results.innerHTML='<div class="emptyState">User not found</div>';
+btn.disabled=false;
+return;
+}
+
+const userData=userSnap.data();
+
+results.innerHTML="";
+
+const div=document.createElement("div");
+div.className="userItem";
+
+const avatar=document.createElement("img");
+avatar.className="avatar";
+avatar.src=userData.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(userData.username)}&background=ff4500&color=fff`;
+
+const info=document.createElement("div");
+info.className="userInfo";
+
+const name=document.createElement("div");
+name.className="username";
+name.textContent=userData.username;
+
+const email=document.createElement("div");
+email.className="email";
+email.textContent=userData.email;
+
+info.appendChild(name);
+info.appendChild(email);
+
+div.appendChild(avatar);
+div.appendChild(info);
+
+div.onclick=()=>{
+window.location.href=`chat.html?uid=${foundUid}&name=${encodeURIComponent(userData.username)}`;
+};
+
+results.appendChild(div);
+
+btn.disabled=false;
+
+}catch(e){
+
+showMessage("Error: "+e.message);
+
+results.innerHTML='<div class="emptyState">Search failed</div>';
+
+btn.disabled=false;
+
+}
+
+});
+
+
+document.getElementById("searchInput").addEventListener("keypress",(e)=>{
+
+if(e.key==="Enter"){
+document.getElementById("searchBtn").click();
+}
+
+});
+
+</script>
+
+</body>
+</html>

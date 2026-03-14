@@ -1,0 +1,458 @@
+<!-- breathe.html - Enhanced with Firestore Integration -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Breathe | Ethereal Glow</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Shadows+Into+Light&family=Quicksand:wght@300;500&display=swap" rel="stylesheet">
+
+<style>
+* { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
+
+body, html { 
+    margin:0; padding:0; width:100%; height:100%; 
+    background:#050200; 
+    font-family:'Shadows Into Light', cursive; 
+    color:white; 
+    user-select:none; 
+    touch-action:none; 
+    overflow: hidden;
+}
+
+/* --- RETURN BUTTON - Unified with theme --- */
+.back-home {
+    position: fixed; 
+    top: 20px; 
+    left: 20px; 
+    z-index: 9999;
+    background: rgba(255,255,255,0.05); 
+    border: 1px solid rgba(255,69,0,0.3); 
+    color: #ffca99; 
+    padding: 8px 20px; 
+    border-radius: 25px; 
+    cursor: pointer;
+    font-family: 'Quicksand', sans-serif;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(5px);
+}
+
+.back-home:hover {
+    background: rgba(255,69,0,0.15);
+    border-color: #ff4500;
+    color: #fff;
+}
+
+/* --- BREATHE MODE - Unified background --- */
+#voidMode {
+    display: flex; 
+    height: 100vh; 
+    width: 100vw;
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: center;
+    background: #050200;
+    text-align: center;
+    position: relative;
+}
+
+/* Animated breathing circle with unified orange theme */
+.circle {
+    width: 140px; 
+    height: 140px;
+    background: radial-gradient(circle, rgba(255,69,0,0.2) 0%, rgba(255,69,0,0.05) 70%);
+    border: 2px solid rgba(255,69,0,0.3); 
+    border-radius:50%;
+    animation: breathe 8s infinite ease-in-out;
+    box-shadow: 0 0 40px rgba(255,69,0,0.2);
+    margin-bottom: 20px;
+}
+
+@keyframes breathe {
+    0%,100% { transform: scale(1); opacity:0.3; }
+    50% { transform: scale(1.6); opacity:0.7; }
+}
+
+#breathe-text { 
+    margin-top: 15px; 
+    letter-spacing: 4px; 
+    opacity:0.6; 
+    color: #ffca99;
+    font-size: 1.1rem;
+}
+
+/* --- FORM CONTAINER - Unified styling --- */
+#rantContainer { 
+    margin-top: 30px; 
+    width: 85%; 
+    max-width: 350px;
+    display:flex; 
+    flex-direction: column; 
+    gap:12px; 
+    transition: opacity 0.8s;
+    background: rgba(255,255,255,0.05);
+    padding: 30px;
+    border-radius: 15px;
+    border: 1px solid rgba(255,69,0,0.3);
+    box-shadow: 0 4px 20px rgba(255,69,0,0.1);
+}
+
+/* Unified input styling */
+.void-input, #voidMessage {
+    width: 100%; 
+    background: rgba(255,255,255,0.05); 
+    border: 1px solid rgba(255,69,0,0.3); 
+    color: #ffca99; 
+    font-family: 'Quicksand', sans-serif; 
+    text-align:center;
+    padding:12px; 
+    font-size:0.95rem;
+    border-radius: 10px;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+.void-input:focus, #voidMessage:focus {
+    border-color: #ff4500;
+    background: rgba(255,255,255,0.08);
+}
+
+.void-input::placeholder, #voidMessage::placeholder {
+    color: rgba(255,255,255,0.4);
+}
+
+#voidMessage {
+    height: 80px;
+    resize: none;
+    color: #fff;
+}
+
+/* From field read-only styling */
+.from-field {
+    background: rgba(255,69,0,0.1) !important;
+    border-color: rgba(255,69,0,0.5) !important;
+    color: #ffaa00 !important;
+    cursor: default;
+}
+
+.from-label {
+    font-family: 'Quicksand', sans-serif;
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.5);
+    margin-bottom: -5px;
+    text-align: center;
+}
+
+.info-sub { 
+    font-family: 'Quicksand', sans-serif; 
+    font-size:0.75rem; 
+    opacity:0.4; 
+    letter-spacing:0.5px; 
+    margin-bottom: 10px;
+    color: #ffca99;
+}
+
+/* Unified submit button */
+.submit-btn {
+    background: #ff4500; 
+    border: none; 
+    color: #000;
+    padding: 12px 50px; 
+    border-radius: 50px; 
+    font-size: 1.1rem; 
+    cursor: pointer;
+    font-family: 'Shadows Into Light', cursive;
+    font-weight: bold;
+    margin-top: 10px;
+    transition: all 0.3s ease;
+}
+
+.submit-btn:hover {
+    background: #ff6347;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255,69,0,0.3);
+}
+
+.submit-btn:disabled {
+    background: #666;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Message display */
+#msg {
+    margin: 10px 0 0 0;
+    font-size: 12px;
+    text-align: center;
+    min-height: 20px;
+    color: #ff6347;
+    font-family: 'Quicksand', sans-serif;
+}
+
+/* --- POPUP NOTIFICATION - Unified --- */
+#popupOverlay {
+    position: fixed; 
+    top:0; 
+    left:0; 
+    width:100%; 
+    height:100%;
+    background: rgba(0,0,0,0.92); 
+    z-index:500;
+    display:none; 
+    align-items:center; 
+    justify-content:center;
+    padding: 40px; 
+    text-align:center; 
+    font-size:1.8rem; 
+    color:#ffca99;
+}
+
+.popup-content {
+    background: rgba(255,255,255,0.05);
+    padding: 40px;
+    border-radius: 15px;
+    border: 1px solid rgba(255,69,0,0.3);
+    max-width: 300px;
+}
+
+/* Floating words animation */
+.word-soul {
+    position: fixed;
+    pointer-events: none;
+    z-index: 250;
+    font-size: 1.8rem;
+    color: #ffca99;
+    text-shadow: 0 0 15px #ff4500;
+    opacity: 0;
+    font-family: 'Shadows Into Light';
+}
+
+</style>
+</head>
+<body>
+
+<button class="back-home" id="backBtn">Return</button>
+
+<div id="voidMode">
+    <div class="circle"></div>
+    <p id="breathe-text">breathe in...</p>
+    
+    <div id="rantContainer">
+        <p class="info-sub">no strings attached. release to the void.</p>
+        
+        <input type="text" id="voidDear" class="void-input" placeholder="dear...">
+        <textarea id="voidMessage" class="void-input" placeholder="your message..." style="height:80px;" required></textarea>
+        
+        <div class="from-label">from</div>
+        <input type="text" id="voidFrom" class="void-input from-field" readonly placeholder="Loading username...">
+        
+        <button class="submit-btn" id="releaseBtn">Release</button>
+        <p id="msg"></p>
+    </div>
+</div>
+
+<div id="popupOverlay">
+    <div class="popup-content">
+        <div style="font-size: 3rem; margin-bottom: 15px;">✨</div>
+        <div style="font-family: 'Shadows Into Light'; font-size: 1.5rem; margin-bottom: 10px;">Released to the Void</div>
+        <div style="font-family: 'Quicksand', sans-serif; font-size: 0.9rem; opacity: 0.7;">Your breath has been saved</div>
+    </div>
+</div>
+
+<!-- Firebase Modular SDK -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { 
+    getFirestore, 
+    collection, 
+    addDoc, 
+    doc,
+    getDoc,
+    serverTimestamp 
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyBSmm2lC7iAMmQJqsG_jXi4DWpL7ghcJnc",
+    authDomain: "whispr-92fc0.firebaseapp.com",
+    projectId: "whispr-92fc0",
+    storageBucket: "whispr-92fc0.firebasestorage.app",
+    messagingSenderId: "133594748424",
+    appId: "1:133594748424:web:7dc7ff44e105d2d5cee3bd"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+let currentUserData = null;
+let activeMode = 'breathe';
+
+// DOM Elements
+const backBtn = document.getElementById('backBtn');
+const releaseBtn = document.getElementById('releaseBtn');
+const voidDear = document.getElementById('voidDear');
+const voidMessage = document.getElementById('voidMessage');
+const voidFrom = document.getElementById('voidFrom');
+const rantContainer = document.getElementById('rantContainer');
+const popupOverlay = document.getElementById('popupOverlay');
+const msg = document.getElementById('msg');
+
+// Event Listeners
+backBtn.addEventListener('click', () => window.location.href = 'enter.html');
+releaseBtn.addEventListener('click', releaseRant);
+
+// Message display helper
+function showMessage(text, isError = true) {
+    msg.textContent = text;
+    msg.style.color = isError ? "#ff6347" : "#4CAF50";
+}
+
+// Auth state listener - Get username and require login
+onAuthStateChanged(auth, async user => {
+    if(!user) {
+        window.location.href = "login.html";
+        return;
+    }
+    
+    // Get user data from Firestore
+    try {
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        if(userDoc.exists()) {
+            currentUserData = userDoc.data();
+            const username = currentUserData.username || currentUserData.displayName || user.displayName || "Anonymous";
+            voidFrom.value = username;
+            voidFrom.placeholder = username;
+        } else {
+            const username = user.displayName || "Anonymous";
+            voidFrom.value = username;
+            currentUserData = { username: username, displayName: username };
+        }
+    } catch(e) {
+        console.error('Error fetching user:', e);
+        const username = user.displayName || "Anonymous";
+        voidFrom.value = username;
+        currentUserData = { username: username, displayName: username };
+    }
+});
+
+// Breathing cycle animation
+function startBreathingCycle() {
+    const bText = document.getElementById('breathe-text');
+    setInterval(() => {
+        if(activeMode === 'breathe') {
+            bText.innerText = bText.innerText === "breathe in..." ? "breathe out..." : "breathe in...";
+        }
+    }, 4000);
+}
+
+// Release breath to Firestore (instead of Google Sheets)
+async function releaseRant() {
+    const d = voidDear.value.trim();
+    const m = voidMessage.value.trim();
+    const f = voidFrom.value.trim();
+    
+    if(!m) {
+        showMessage("Message cannot be empty");
+        return;
+    }
+    
+    const user = auth.currentUser;
+    if(!user) {
+        showMessage("You must be logged in");
+        return;
+    }
+    
+    releaseBtn.disabled = true;
+    showMessage("Releasing to void...", false);
+    
+    try {
+        // Save to Firestore 'breaths' collection
+        const breathData = {
+            dear: d || "Someone",
+            message: m,
+            from: f || currentUserData?.username || user.displayName || "Anonymous",
+            uid: user.uid,
+            timestamp: serverTimestamp(),
+            type: 'breath' // Distinguish from whispers
+        };
+        
+        const docRef = await addDoc(collection(db, "breaths"), breathData);
+        console.log('Breath saved with ID:', docRef.id);
+        
+        // Visual feedback
+        rantContainer.style.opacity = '0';
+        rantContainer.style.pointerEvents = 'none';
+        
+        // Show success popup
+        popupOverlay.style.display = 'flex';
+        
+        // Animate words floating away
+        animateWords(m, () => {
+            setTimeout(() => {
+                // Reset form
+                voidDear.value = '';
+                voidMessage.value = '';
+                // Restore username
+                const username = currentUserData?.username || user.displayName || "Anonymous";
+                voidFrom.value = username;
+                
+                rantContainer.style.opacity = '1';
+                rantContainer.style.pointerEvents = 'auto';
+                releaseBtn.disabled = false;
+                showMessage("", false);
+                
+                // Hide popup after delay
+                setTimeout(() => {
+                    popupOverlay.style.display = 'none';
+                }, 2000);
+            }, 2000);
+        });
+        
+    } catch(e) {
+        console.error('Error saving breath:', e);
+        showMessage("Failed to release: " + e.message);
+        releaseBtn.disabled = false;
+    }
+}
+
+// Animate words floating away
+function animateWords(msg, callback) {
+    const words = msg.split(' '); 
+    let completed = 0;
+    words.forEach((w, i) => {
+        setTimeout(() => {
+            const el = document.createElement('div'); 
+            el.className = 'word-soul';
+            el.innerText = w; 
+            el.style.left = '50%'; 
+            el.style.top = '50%'; 
+            document.body.appendChild(el);
+            
+            const anim = el.animate([
+                { opacity: 0, transform: 'translate(-50%,-50%) scale(0.9)' },
+                { opacity: 1, offset: 0.15 },
+                { opacity: 0, transform: `translate(${(Math.random()-0.5)*250}px,-250px) scale(0.6)` }
+            ], { duration: 5500, easing: 'ease-out' });
+            
+            anim.onfinish = () => { 
+                el.remove(); 
+                completed++; 
+                if(completed === words.length && callback) callback(); 
+            };
+        }, i * 280);
+    });
+}
+
+// Close popup on click
+popupOverlay.addEventListener('click', () => {
+    popupOverlay.style.display = 'none';
+});
+
+// Initialize
+startBreathingCycle();
+</script>
+</body>
+</html>

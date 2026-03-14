@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Whispers | Ethereal Glow</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Shadows+Into+Light&family=Quicksand:wght@300;500&display=swap" rel="stylesheet">
+
+<style>
+* { box-sizing: border-box; }
+
+body, html { 
+    width:100%; height:100%; 
+    background:#050200; 
+    font-family:'Shadows Into Light', cursive; 
+    color:white; 
+    overflow:hidden; 
+    user-select:none; 
+    margin:0;
+}
+
+canvas { position:fixed; top:0; left:0; z-index:1; pointer-events:none; }
+
+#mainContent { width:100vw; height:100vh; display:block; }
+
+#returnBtn { 
+    position: fixed; top: 20px; left: 20px; z-index: 9999; 
+    background: rgba(255, 255, 255, 0.05); 
+    border: 1px solid rgba(255, 69, 0, 0.3); 
+    color: #ffca99; 
+    padding: 8px 20px; 
+    border-radius: 25px; 
+    cursor: pointer; 
+    font-family: 'Quicksand', sans-serif; 
+    font-size: 1rem; 
+    transition: all 0.3s ease; 
+    backdrop-filter: blur(5px); 
+}
+
+#returnBtn:hover { 
+    background: rgba(255, 69, 0, 0.15); 
+    border-color: #ff4500; 
+    color: #fff; 
+}
+
+#netCursor { 
+    position: fixed; pointer-events:none; z-index:9999; 
+    width:65px; height:65px; 
+    border:1.5px solid #fff; 
+    display:none; 
+    margin-left:-85px; margin-top:-110px; 
+    border-radius:50%; 
+}
+
+#netCursor::after { 
+    content:''; position:absolute; top:50%; left:50%; 
+    width:4px; height:120px; 
+    background: linear-gradient(to bottom, #5d4037, #1a0f0a); 
+    transform-origin:top center; transform:rotate(-35deg); 
+    border-radius:2px; 
+}
+
+#netDock { 
+    position: fixed; bottom:30px; right:30px; 
+    width:70px; height:70px; 
+    background: rgba(255,255,255,0.05); 
+    border:2px dashed rgba(255,255,255,0.2); 
+    border-radius:50%; z-index:100; 
+    display:flex; align-items:center; justify-content:center; 
+    cursor: pointer;
+    touch-action: none;
+}
+
+#netDock div { width:25px; height:25px; border:1px solid #fff; border-radius:50%; opacity:0.3; }
+
+.wrapper { 
+    position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); 
+    width:85%; max-width:350px; z-index:200; 
+    opacity:0; pointer-events:none; transition:opacity 0.8s; 
+}
+
+.wrapper.active { opacity:1; pointer-events:auto; }
+
+.container { 
+    background: rgba(255,255,255,0.05); 
+    padding:35px; 
+    border-radius:15px; 
+    border:1px solid rgba(255,69,0,0.3); 
+    text-align:center;
+    box-shadow:0 4px 20px rgba(255,69,0,0.1);
+}
+
+.void-input, #message { 
+    width:100%; 
+    background:rgba(255,255,255,0.05); 
+    border:none; 
+    border:1px solid rgba(255,69,0,0.3); 
+    color:#ffca99; 
+    font-family:'Quicksand', sans-serif; 
+    padding:12px; 
+    font-size:0.95rem; 
+    text-align:center;
+    border-radius:10px;
+    margin-bottom:10px;
+    outline:none;
+}
+
+#message { 
+    height:90px; 
+    resize:none; 
+    color:#fff;
+}
+
+.void-input:focus, #message:focus {
+    border-color:#ff4500;
+    background:rgba(255,255,255,0.08);
+}
+
+.void-input::placeholder, #message::placeholder {
+    color:rgba(255,255,255,0.4);
+}
+
+.from-field {
+    background: rgba(255,69,0,0.1) !important;
+    border-color: rgba(255,69,0,0.5) !important;
+    color: #ffaa00 !important;
+    cursor: default;
+}
+
+.from-label {
+    font-family: 'Quicksand', sans-serif;
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.5);
+    margin-top: 5px;
+    margin-bottom: 5px;
+    text-align: center;
+}
+
+.submit-btn { 
+    background:#ff4500; 
+    border:none; 
+    color:#000; 
+    padding:12px 50px; 
+    border-radius:50px; 
+    font-weight:bold; 
+    cursor:pointer; 
+    margin-top:15px; 
+    font-size:1.1rem;
+    font-family:'Shadows Into Light', cursive;
+    transition:all .3s ease;
+}
+
+.submit-btn:hover {
+    background:#ff6347;
+    transform:translateY(-2px);
+    box-shadow:0 4px 12px rgba(255,69,0,0.3);
+}
+
+.submit-btn:disabled {
+    background:#666;
+    cursor:not-allowed;
+    transform:none;
+}
+
+.word-soul { 
+    position: fixed; pointer-events: none; z-index:250; 
+    font-size:1.8rem; color:#ffca99; 
+    text-shadow:0 0 15px #ff4500; 
+    opacity:0; 
+    font-family:'Shadows Into Light'; 
+}
+
+#introLayer { 
+    position:absolute; top:45%; left:50%; transform:translate(-50%,-50%); 
+    z-index:150; text-align:center; 
+    display:flex; flex-direction:column; align-items:center; 
+}
+
+.prompt-text { 
+    font-size:1.8rem; color:#ffca99; cursor:pointer; 
+    background: rgba(255,255,255,0.05); 
+    padding:15px 30px; 
+    border-radius:50px; 
+    border:1px solid rgba(255,69,0,0.3);
+    transition:all .3s ease;
+}
+
+.prompt-text:hover {
+    background:rgba(255,69,0,0.15);
+    border-color:#ff4500;
+}
+
+.info-sub { 
+    font-family:'Quicksand'; 
+    font-size:0.75rem; 
+    opacity:0.4; 
+    letter-spacing:0.5px; 
+    margin-top:10px;
+}
+
+/* FIXED POPUP - NO SCROLLING, FITS CONTENT */
+#popupOverlay { 
+    position: fixed; top:0; left:0; 
+    width:100%; height:100%; 
+    background:rgba(0,0,0,0.92); 
+    z-index:500; display:none; 
+    align-items:center; justify-content:center; 
+    padding:20px; 
+    /* Removed overflow-y: auto */
+}
+
+#modalBox {
+    max-width: 480px;
+    width: 95%;
+    /* Removed max-height and overflow-y */
+    padding: 25px 20px;
+    background: rgba(10,5,2,0.95);
+    border-radius: 30px;
+    border: 1px solid rgba(255,69,0,0.3);
+    text-align: center;
+    color: #ffca99;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+    /* Auto height based on content */
+    height: auto;
+}
+
+.reactions-bar {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 10px 0;
+    flex-wrap: wrap;
+}
+
+.reaction-btn {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,69,0,0.3);
+    border-radius: 15px;
+    padding: 6px 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: #ffca99;
+}
+
+.reaction-btn:hover {
+    background: rgba(255,69,0,0.15);
+    transform: scale(1.1);
+}
+
+.reaction-btn.active {
+    background: rgba(255,69,0,0.3);
+    border-color: #ff4500;
+    box-shadow: 0 0 10px rgba(255,69,0,0.5);
+}
+
+.reaction-count {
+    font-family: 'Quicksand', sans-serif;
+    font-size: 0.9rem;
+    color: #fff;
+    min-width: 20px;
+}
+
+.comments-section {
+    margin-top: 15px;
+    text-align: left;
+    border-top: 1px solid rgba(255,69,0,0.2);
+    padding-top: 15px;
+    /* Max height for comments only, not whole modal */
+    max-height: 250px;
+    overflow-y: auto;
+}
+
+.comments-title {
+    font-family: 'Shadows Into Light';
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+    color: #ffca99;
+}
+
+.comment-item {
+    background: rgba(255,255,255,0.03);
+    border-radius: 10px;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    border-left: 2px solid rgba(255,69,0,0.3);
+}
+
+/* CLICKABLE USERNAME STYLES */
+.comment-author {
+    font-family: 'Quicksand', sans-serif;
+    font-size: 0.8rem;
+    color: #ffaa00;
+    margin-bottom: 5px;
+    cursor: pointer;
+    display: inline-block;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.comment-author:hover {
+    color: #ff4500;
+    text-decoration: underline;
+    transform: translateX(3px);
+}
+
+.comment-text {
+    font-family: 'Quicksand', sans-serif;
+    font-size: 0.9rem;
+    color: #fff;
+    line-height: 1.3;
+}
+
+.comment-input-area {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+    position: sticky;
+    bottom: 0;
+    background: rgba(10,5,2,0.95);
+    padding-top: 10px;
+}
+
+.comment-input {
+    flex: 1;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,69,0,0.3);
+    border-radius: 20px;
+    padding: 10px 15px;
+    color: #fff;
+    font-family: 'Quicksand', sans-serif;
+    outline: none;
+    font-size: 0.9rem;
+}
+
+.comment-input::placeholder {
+    color: rgba(255,255,255,0.4);
+}
+
+.comment-submit {
+    background: #ff4500;
+    border: none;
+    border-radius: 20px;
+    padding: 10px 20px;
+    color: #000;
+    font-weight: bold;
+    cursor: pointer;
+    font-family: 'Shadows Into Light';
+    transition: all 0.3s ease;
+    font-size: 1rem;
+}
+
+.comment-submit:hover {
+    background: #ff6347;
+    transform: scale(1.05);
+}
+
+.comment-submit:disabled {
+    background: #666;
+    cursor: not-allowed;
+    transform: none;
+}
+
+#msg {
+    margin:10px 0 0 0;
+    font-size:12px;
+    text-align:center;
+    min-height:20px;
+    color:#ff6347;
+    font-family:'Quicksand', sans-serif;
+}
+
+.nevermind-link {
+    margin-top:20px; 
+    opacity:0.3; 
+    font-size:0.8rem; 
+    cursor:pointer;
+    transition: opacity 0.3s;
+}
+
+.nevermind-link:hover {
+    opacity: 0.7;
+}
+
+.no-comments {
+    text-align: center;
+    opacity: 0.5;
+    font-style: italic;
+    padding: 20px;
+    font-family: 'Quicksand', sans-serif;
+    font-size: 0.9rem;
+}
+
+</style>
+</head>
+<body>
+
+<button id="returnBtn">Return</button>
+<div id="mainContent">
+    <canvas id="canvas"></canvas>
+    <div id="netDock"><div></div></div>
+    <div id="netCursor"></div>
+    <div id="introLayer">
+        <img src="https://i.imgur.com/7vlpCCX.png" style="width:140px; filter:drop-shadow(0 0 20px #ffaa00); margin-bottom:5px;">
+        <div class="prompt-text" id="releasePrompt">Release a Whisper</div>
+        <p class="info-sub">these whispers stay. passersby can read them.</p>
+    </div>
+    <div id="popupOverlay">
+        <div id="modalBox">
+            <h3 style="font-family:'Shadows Into Light'; font-size:1.4rem;margin-bottom:18px;opacity:0.85;">✨ Whisper</h3>
+            <div id="whisperMessageBox" style="background: rgba(255,255,255,0.05); padding:12px 15px; border-radius:18px; margin-bottom:15px; font-size:1rem; font-style: italic; line-height:1.4; color:#fff; min-height:60px; text-align:left; word-wrap: break-word; overflow-wrap: break-word;">
+                Loading...
+            </div>
+            
+            <div class="reactions-bar" id="reactionsBar">
+                <button class="reaction-btn" data-type="❤️" onclick="window.toggleReaction('❤️')">
+                    <span>❤️</span><span class="reaction-count" id="count-❤️">0</span>
+                </button>
+                <button class="reaction-btn" data-type="🔥" onclick="window.toggleReaction('🔥')">
+                    <span>🔥</span><span class="reaction-count" id="count-🔥">0</span>
+                </button>
+                <button class="reaction-btn" data-type="✨" onclick="window.toggleReaction('✨')">
+                    <span>✨</span><span class="reaction-count" id="count-✨">0</span>
+                </button>
+                <button class="reaction-btn" data-type="🌙" onclick="window.toggleReaction('🌙')">
+                    <span>🌙</span><span class="reaction-count" id="count-🌙">0</span>
+                </button>
+            </div>
+
+            <div class="comments-section">
+                <div class="comments-title">Comments</div>
+                <div id="commentsList">
+                    <div class="no-comments">No echoes yet... Be the first to respond.</div>
+                </div>
+                <div class="comment-input-area">
+                    <input type="text" id="commentInput" class="comment-input" placeholder="Add your echo..." maxlength="200">
+                    <button id="commentSubmit" class="comment-submit" onclick="window.submitComment()">Send</button>
+                </div>
+            </div>
+
+            <button id="closeOverlayBtn" style="margin-top:20px;background:rgba(255,69,0,0.2);border:1px solid rgba(255,69,0,0.5);color:#ffca99;padding:8px 20px;border-radius:20px;cursor:pointer;font-family:'Quicksand',sans-serif;">Close</button>
+        </div>
+    </div>
+    <div class="wrapper" id="mainBox">
+        <div class="container">
+            <form id="whisperForm">
+                <input type="text" id="whisperDear" class="void-input" placeholder="dear..." style="margin-bottom:10px;">
+                <textarea id="message" placeholder="whisper your heart out..." required></textarea>
+                
+                <div class="from-label">from</div>
+                <input type="text" id="whisperFrom" class="void-input from-field" readonly placeholder="Loading username...">
+                
+                <button type="submit" id="submitBtn" class="submit-btn">Release</button>
+            </form>
+            <p id="msg"></p>
+            <p class="nevermind-link" id="nevermindLink">Nevermind</p>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { 
+    getFirestore, 
+    collection, 
+    doc,
+    addDoc, 
+    getDoc,
+    updateDoc,
+    query, 
+    orderBy, 
+    limit, 
+    getDocs,
+    onSnapshot,
+    serverTimestamp 
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyBSmm2lC7iAMmQJqsG_jXi4DWpL7ghcJnc",
+    authDomain: "whispr-92fc0.firebaseapp.com",
+    projectId: "whispr-92fc0",
+    storageBucket: "whispr-92fc0.firebasestorage.app",
+    messagingSenderId: "133594748424",
+    appId: "1:133594748424:web:7dc7ff44e105d2d5cee3bd"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+const canvas = document.getElementById('canvas'), ctx = canvas.getContext('2d');
+const net = document.getElementById('netCursor'), intro = document.getElementById('introLayer'), wrapper = document.getElementById('mainBox');
+const popupOverlay = document.getElementById('popupOverlay');
+let particles = [], dragging=false, mouseX=0, mouseY=0;
+let currentWhisperId = null;
+let currentWhisperData = null;
+let commentsUnsubscribe = null;
+let currentUsername = "Anonymous";
+let currentUserId = null;
+let whisperUnsubscribe = null; // For live reaction updates
+
+// Cache for usernames
+const usernameCache = new Map();
+
+// EXPOSE FUNCTIONS TO GLOBAL SCOPE IMMEDIATELY
+
+// FIXED: One reaction per user logic (same as profile)
+window.toggleReaction = async function(reactionType) {
+    if(!currentWhisperId || !auth.currentUser) {
+        showMessage("You must be logged in to react", true);
+        return;
+    }
+    
+    const user = auth.currentUser;
+    const whisperRef = doc(db, "whispers", currentWhisperId);
+    
+    try {
+        const whisperSnap = await getDoc(whisperRef);
+        if(!whisperSnap.exists()) return;
+        
+        const data = whisperSnap.data();
+        const reactions = data.reactions || {};
+        const currentReaction = reactions[user.uid];
+        
+        let updates = {};
+        
+        if(currentReaction === reactionType) {
+            // Same reaction clicked -> REMOVE it (toggle off)
+            updates[`reactions.${user.uid}`] = null;
+        } else {
+            // Different reaction -> REPLACE old one (only one per user)
+            updates[`reactions.${user.uid}`] = reactionType;
+        }
+        
+        await updateDoc(whisperRef, updates);
+        // UI updates via onSnapshot listener
+        
+    } catch(e) {
+        showMessage("Failed to react: " + e.message);
+    }
+};
+
+window.submitComment = async function() {
+    if(!currentWhisperId || !auth.currentUser) {
+        showMessage("You must be logged in to comment", true);
+        return;
+    }
+    
+    const input = document.getElementById('commentInput');
+    const btn = document.getElementById('commentSubmit');
+    const text = input.value.trim();
+    
+    if(!text) return;
+    
+    // Ensure username is loaded
+    if(!currentUsername || currentUsername === "Anonymous") {
+        const user = auth.currentUser;
+        try {
+            const userDoc = await getDoc(doc(db, "users", user.uid));
+            if(userDoc.exists()) {
+                const data = userDoc.data();
+                currentUsername = data.username || data.displayName || user.displayName || "Anonymous";
+            }
+        } catch(e) {
+            console.error('Failed to reload username:', e);
+        }
+    }
+    
+    btn.disabled = true;
+    
+    try {
+        const user = auth.currentUser;
+        const commentsRef = collection(db, "whispers", currentWhisperId, "comments");
+        
+        await addDoc(commentsRef, {
+            text: text,
+            from: currentUsername,
+            uid: user.uid,
+            timestamp: serverTimestamp()
+        });
+        
+        input.value = '';
+        showMessage("Echo added!", false);
+        setTimeout(() => showMessage("", false), 2000);
+        
+    } catch(e) {
+        showMessage("Failed: " + e.message);
+    } finally {
+        btn.disabled = false;
+    }
+};
+
+// Smart profile routing - own profile vs others
+window.viewProfile = function(uid) {
+    if(!uid || uid === 'undefined' || uid === 'null' || uid === 'unknown') {
+        console.error('Invalid UID:', uid);
+        return;
+    }
+    
+    // Check if it's the current logged-in user
+    if(uid === currentUserId) {
+        window.location.href = 'profile.html';
+    } else {
+        window.location.href = `other.html?uid=${uid}`;
+    }
+};
+
+// Event Listeners
+document.getElementById('returnBtn').addEventListener('click', () => {
+    window.location.href = 'enter.html';
+});
+
+document.getElementById('releasePrompt').addEventListener('click', openRelease);
+document.getElementById('nevermindLink').addEventListener('click', closeRelease);
+document.getElementById('closeOverlayBtn').addEventListener('click', closePopup);
+document.getElementById('commentInput').addEventListener('keypress', (e) => {
+    if(e.key === 'Enter') window.submitComment();
+});
+
+function closePopup() {
+    popupOverlay.style.display = 'none';
+    if(commentsUnsubscribe) {
+        commentsUnsubscribe();
+        commentsUnsubscribe = null;
+    }
+    if(whisperUnsubscribe) {
+        whisperUnsubscribe();
+        whisperUnsubscribe = null;
+    }
+    currentWhisperId = null;
+    currentWhisperData = null;
+}
+
+// Get username from Firestore with caching
+async function getUsername(uid) {
+    if(!uid) return 'Anonymous';
+    
+    if(usernameCache.has(uid)) {
+        return usernameCache.get(uid);
+    }
+    
+    try {
+        const userDoc = await getDoc(doc(db, "users", uid));
+        if(userDoc.exists()) {
+            const userData = userDoc.data();
+            const username = userData.username || userData.displayName || 'Anonymous';
+            usernameCache.set(uid, username);
+            return username;
+        }
+    } catch(e) {
+        console.error('Error fetching username for', uid, e);
+    }
+    
+    return 'Anonymous';
+}
+
+// Auth state listener
+onAuthStateChanged(auth, async user => {
+    if(!user) {
+        window.location.href = "login.html";
+        return;
+    }
+    
+    currentUserId = user.uid;
+    
+    try {
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        if(userDoc.exists()) {
+            const userData = userDoc.data();
+            currentUsername = userData.username || userData.displayName || user.displayName || "Anonymous";
+            usernameCache.set(user.uid, currentUsername);
+        } else {
+            currentUsername = user.displayName || "Anonymous";
+        }
+        
+        document.getElementById('whisperFrom').value = currentUsername;
+        console.log('User loaded:', currentUsername, 'UID:', currentUserId);
+        
+    } catch(e) {
+        console.error('Error:', e);
+        currentUsername = user.displayName || "Anonymous";
+        document.getElementById('whisperFrom').value = currentUsername;
+    }
+});
+
+function showMessage(text, isError = true) {
+    const msg = document.getElementById("msg");
+    msg.textContent = text;
+    msg.style.color = isError ? "#ff6347" : "#4CAF50";
+}
+
+// Particle system
+function init(){ 
+    canvas.width = window.innerWidth; 
+    canvas.height = window.innerHeight; 
+    particles = []; 
+    for(let i = 0; i < 220; i++) particles.push(new Particle()); 
+}
+
+class Particle {
+    constructor(){ 
+        this.isCarrier = Math.random() > 0.92; 
+        this.x = Math.random() * canvas.width; 
+        this.y = this.isCarrier ? Math.random() * (canvas.height * 0.45) : Math.random() * canvas.height; 
+        this.size = this.isCarrier ? 4.5 : 2; 
+        this.vx = (Math.random() - 0.5) * 0.4; 
+        this.vy = (Math.random() - 0.5) * 0.4; 
+    }
+    
+    draw(){ 
+        ctx.beginPath(); 
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); 
+        ctx.fillStyle = this.isCarrier ? "#ffca99" : "#ff330044"; 
+        if(this.isCarrier){ 
+            ctx.shadowBlur = 15; 
+            ctx.shadowColor = "#ffaa00"; 
+        } 
+        ctx.fill(); 
+        ctx.shadowBlur = 0; 
+    }
+    
+    sparkle(){ 
+        for(let i = 0; i < 15; i++){ 
+            const el = document.createElement('div'); 
+            el.style.position = 'fixed'; 
+            el.style.left = this.x + 'px'; 
+            el.style.top = this.y + 'px'; 
+            el.style.width = '4px'; 
+            el.style.height = '4px'; 
+            el.style.backgroundColor = '#ffca99'; 
+            el.style.borderRadius = '50%'; 
+            el.style.pointerEvents = 'none'; 
+            el.style.zIndex = '1000'; 
+            el.style.boxShadow = '0 0 10px #ffaa00'; 
+            document.body.appendChild(el); 
+            el.animate([
+                {transform: 'translate(0,0) scale(1)', opacity: 1},
+                {transform: `translate(${(Math.random()-0.5)*150}px, ${(Math.random()-0.5)*150}px) scale(0)`, opacity: 0}
+            ], {duration: 1000, easing: 'ease-out'}).onfinish = () => el.remove(); 
+        } 
+    }
+    
+    update(){ 
+        if(this.isCarrier && dragging){ 
+            const d = Math.hypot(this.x - mouseX, this.y - mouseY); 
+            if(d < 100){ 
+                this.vx += (mouseX - this.x) * 0.001; 
+                this.vy += (mouseY - this.y) * 0.001; 
+            } 
+            if(d < 40){ 
+                this.sparkle(); 
+                particles.splice(particles.indexOf(this), 1); 
+                dragging = false; 
+                net.style.display = 'none'; 
+                catchSoul(currentUsername); 
+                return; 
+            } 
+        }
+        this.x += this.vx; 
+        this.y += this.vy; 
+        if(this.x < 0 || this.x > canvas.width) this.vx *= -1; 
+        const bottomLimit = this.isCarrier ? canvas.height * 0.5 : canvas.height; 
+        if(this.y < 0 || this.y > bottomLimit) this.vy *= -1;
+    }
+}
+
+function animate(){ 
+    ctx.clearRect(0, 0, canvas.width, canvas.height); 
+    particles.forEach(p => { p.update(); p.draw(); }); 
+    requestAnimationFrame(animate); 
+}
+
+function startDrag(e){ 
+    e.preventDefault();
+    e.stopPropagation();
+    dragging = true; 
+    net.style.display = 'block'; 
+    updateMouse(e); 
+}
+
+function updateMouse(e){ 
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    mouseX = clientX;
+    mouseY = clientY;
+    net.style.left = mouseX + 'px'; 
+    net.style.top = mouseY + 'px'; 
+}
+
+window.addEventListener('mousemove', (e) => { 
+    if(dragging) updateMouse(e); 
+});
+window.addEventListener('touchmove', (e) => { 
+    if(dragging) updateMouse(e); 
+}, {passive: false});
+window.addEventListener('mouseup', () => { 
+    dragging = false; 
+    net.style.display = 'none'; 
+});
+window.addEventListener('touchend', () => { 
+    dragging = false; 
+    net.style.display = 'none'; 
+});
+
+// Net dock events - FIXED
+const netDock = document.getElementById('netDock');
+netDock.addEventListener('mousedown', (e) => startDrag(e));
+netDock.addEventListener('touchstart', (e) => startDrag(e), {passive: false});
+
+function openRelease(){ 
+    wrapper.classList.add('active'); 
+    intro.style.opacity = '0'; 
+}
+
+function closeRelease(){ 
+    wrapper.classList.remove('active'); 
+    intro.style.opacity = '1'; 
+}
+
+// Random whisper selection
+async function catchSoul(username = "Anonymous"){
+    popupOverlay.style.display = 'flex';
+    document.getElementById('whisperMessageBox').innerText = "Catching whisper from the void...";
+    
+    try { 
+        const whispersRef = collection(db, "whispers");
+        
+        // Get pool of recent whispers for random selection (last 50 for performance)
+        const q = query(whispersRef, orderBy("timestamp", "desc"), limit(50));
+        const querySnapshot = await getDocs(q);
+        
+        if (!querySnapshot.empty) {
+            // Convert to array and select RANDOMLY
+            const whispers = querySnapshot.docs;
+            const randomIndex = Math.floor(Math.random() * whispers.length);
+            const randomDoc = whispers[randomIndex];
+            
+            currentWhisperId = randomDoc.id;
+            currentWhisperData = randomDoc.data();
+            
+            document.getElementById('whisperMessageBox').innerText = currentWhisperData.message || "The whisper was but a sigh...";
+            
+            setupReactions(currentWhisperData);
+            setupCommentsListener(currentWhisperId);
+            setupWhisperListener(currentWhisperId); // NEW: Live reaction updates
+        } else {
+            document.getElementById('whisperMessageBox').innerText = "No whispers found...";
+            document.getElementById('reactionsBar').style.display = 'none';
+            document.querySelector('.comments-section').style.display = 'none';
+        }
+    } catch(e) { 
+        document.getElementById('whisperMessageBox').innerText = "Error: " + e.message; 
+    }
+}
+
+// NEW: Live listener for whisper reactions
+function setupWhisperListener(whisperId) {
+    if(whisperUnsubscribe) whisperUnsubscribe();
+    
+    const whisperRef = doc(db, "whispers", whisperId);
+    whisperUnsubscribe = onSnapshot(whisperRef, (docSnap) => {
+        if(!docSnap.exists()) return;
+        const data = docSnap.data();
+        updateReactionsUI(data.reactions || {});
+    });
+}
+
+// NEW: Update reaction UI live
+function updateReactionsUI(reactions) {
+    const user = auth.currentUser;
+    const userReaction = user && reactions[user.uid] ? reactions[user.uid] : null;
+    
+    // Count each type
+    const counts = { "❤️": 0, "🔥": 0, "✨": 0, "🌙": 0 };
+    Object.values(reactions).forEach(r => {
+        if(counts.hasOwnProperty(r)) counts[r]++;
+    });
+    
+    // Update counts
+    document.getElementById('count-❤️').textContent = counts["❤️"];
+    document.getElementById('count-🔥').textContent = counts["🔥"];
+    document.getElementById('count-✨').textContent = counts["✨"];
+    document.getElementById('count-🌙').textContent = counts["🌙"];
+    
+    // Update active states
+    document.querySelectorAll('.reaction-btn').forEach(btn => {
+        const type = btn.dataset.type;
+        if(type === userReaction) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    });
+}
+
+function setupReactions(whisperData) {
+    const reactions = whisperData.reactions || {};
+    const user = auth.currentUser;
+    
+    // Initial setup - will be updated by listener
+    updateReactionsUI(reactions);
+    
+    document.getElementById('reactionsBar').style.display = 'flex';
+    document.querySelector('.comments-section').style.display = 'block';
+}
+
+function setupCommentsListener(whisperId) {
+    if(commentsUnsubscribe) {
+        commentsUnsubscribe();
+    }
+    
+    const commentsRef = collection(db, "whispers", whisperId, "comments");
+    const q = query(commentsRef, orderBy("timestamp", "desc"), limit(50));
+    
+    commentsUnsubscribe = onSnapshot(q, async (snapshot) => {
+        const commentsList = document.getElementById('commentsList');
+        
+        if(snapshot.empty) {
+            commentsList.innerHTML = '<div class="no-comments">No echoes yet... Be the first to respond.</div>';
+            return;
+        }
+        
+        commentsList.innerHTML = '';
+        
+        const commentPromises = snapshot.docs.map(async (docSnap) => {
+            const comment = docSnap.data();
+            const commentUid = comment.uid;
+            
+            let displayName = await getUsername(commentUid);
+            
+            if(displayName === 'Anonymous' && comment.from && comment.from !== 'Anonymous') {
+                displayName = comment.from;
+            }
+            
+            return {
+                id: docSnap.id,
+                ...comment,
+                displayName: displayName
+            };
+        });
+        
+        const commentsWithNames = await Promise.all(commentPromises);
+        
+        commentsWithNames.forEach(comment => {
+            const commentEl = document.createElement('div');
+            commentEl.className = 'comment-item';
+            
+            const time = comment.timestamp ? new Date(comment.timestamp.toDate()).toLocaleDateString() : 'Unknown time';
+            const safeUid = escapeHtml(comment.uid || '');
+            const safeName = escapeHtml(comment.displayName);
+            const safeText = escapeHtml(comment.text);
+            
+            commentEl.innerHTML = `
+                <div class="comment-author" onclick="window.viewProfile('${safeUid}')" title="View ${safeName}'s profile">
+                    ${safeName} • ${time}
+                </div>
+                <div class="comment-text">${safeText}</div>
+            `;
+            commentsList.appendChild(commentEl);
+        });
+    }, (error) => {
+        console.error('Comments error:', error);
+        document.getElementById('commentsList').innerHTML = '<div class="no-comments">Failed to load echoes...</div>';
+    });
+}
+
+function escapeHtml(text) {
+    if(!text) return '';
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// Submit whisper
+document.getElementById('whisperForm').addEventListener('submit', async function(e){
+    e.preventDefault();
+    
+    const d = document.getElementById('whisperDear').value.trim();
+    const m = document.getElementById('message').value.trim();
+    const btn = document.getElementById('submitBtn'); 
+    
+    if(!m) {
+        showMessage("Message cannot be empty");
+        return;
+    }
+    
+    btn.disabled = true;
+    showMessage("Releasing...", false);
+
+    const user = auth.currentUser;
+    if (!user) {
+        showMessage("You must be logged in");
+        btn.disabled = false;
+        return;
+    }
+    
+    const username = currentUsername || user.displayName || "Anonymous";
+    
+    try {
+        const whisperData = {
+            dear: d || "Someone", 
+            message: m, 
+            from: username, 
+            uid: user.uid, 
+            timestamp: serverTimestamp(),
+            reactions: {}
+        };
+        
+        await addDoc(collection(db, "whispers"), whisperData);
+        
+        showMessage("Released!", false);
+        
+        animateWords(m, () => { 
+            setTimeout(() => { 
+                intro.style.opacity = '1'; 
+                btn.disabled = false; 
+                document.getElementById('whisperForm').reset();
+                document.getElementById('whisperFrom').value = username;
+            }, 2000); 
+        });
+        wrapper.classList.remove('active');
+    } catch(e) {
+        showMessage("Failed: " + e.message);
+        btn.disabled = false;
+    }
+});
+
+function animateWords(msg, callback){
+    const words = msg.split(' '); 
+    let completed = 0;
+    words.forEach((w, i) => {
+        setTimeout(() => {
+            const el = document.createElement('div'); 
+            el.className = 'word-soul'; 
+            el.innerText = w;
+            el.style.left = '50%'; 
+            el.style.top = '50%'; 
+            document.body.appendChild(el);
+            const anim = el.animate([
+                {opacity: 0, transform: 'translate(-50%,-50%) scale(0.9)'}, 
+                {opacity: 1, offset: 0.15}, 
+                {opacity: 0, transform: `translate(${(Math.random()-0.5)*250}px,-250px) scale(0.6)`}
+            ], {duration: 5500, easing: 'ease-out'});
+            anim.onfinish = () => { 
+                el.remove(); 
+                particles.push(new Particle()); 
+                completed++; 
+                if(completed === words.length && callback) callback(); 
+            };
+        }, i * 280);
+    });
+}
+
+window.addEventListener('load', () => { 
+    init(); 
+    animate(); 
+});
+window.addEventListener('resize', () => { 
+    init(); 
+});
+</script>
+</body>
+</html>

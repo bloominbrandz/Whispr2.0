@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Whispers | Ethereal Glow</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Shadows+Into+Light&family=Quicksand:wght@300;500&display=swap');
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
+        body, html { 
+            margin: 0; padding: 0; width: 100%; height: 100%; 
+            background: #020100; overflow: hidden; 
+            font-family: 'Shadows Into Light', cursive; color: white;
+            user-select: none; touch-action: none;
+        }
+
+        /* --- SPLASH SCREEN --- */
+        #splashScreen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #020100; z-index: 5000;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: opacity 0.8s ease;
+        }
+        .splash-logo { width: 220px; margin-bottom: 5px; filter: drop-shadow(0 0 20px #ffaa00); }
+        .mode-container { display: flex; gap: 15px; margin-top: 20px; }
+        .go-btn {
+            background: transparent; border: 1px solid #ffaa00; color: #ffca99;
+            padding: 10px 30px; border-radius: 30px; font-family: inherit;
+            font-size: 1.5rem; cursor: pointer; transition: 0.3s;
+        }
+
+        /* --- NAVIGATION --- */
+        .back-home {
+            position: fixed; top: 20px; left: 20px; z-index: 9999;
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+            color: #ffca99; padding: 5px 15px; border-radius: 20px; cursor: pointer; display: none;
+        }
+
+        /* --- MODE 1: BREATHE (EMBER) --- */
+        #voidMode {
+            display: none; height: 100vh; width: 100vw;
+            flex-direction: column; align-items: center; justify-content: center;
+            background: radial-gradient(circle, #0a0a12 0%, #020100 100%);
+            text-align: center;
+        }
+        .circle {
+            width: 140px; height: 140px; 
+            background: radial-gradient(circle, rgba(255, 120, 0, 0.2) 0%, rgba(255, 69, 0, 0.05) 70%);
+            border: 2px solid rgba(255, 120, 0, 0.3);
+            border-radius: 50%; animation: breathe 8s infinite ease-in-out;
+            box-shadow: 0 0 40px rgba(255, 69, 0, 0.2);
+        }
+        @keyframes breathe {
+            0%, 100% { transform: scale(1); opacity: 0.3; }
+            50% { transform: scale(1.6); opacity: 0.7; }
+        }
+        #rantContainer { 
+            margin-top: 30px; width: 85%; max-width: 300px; 
+            display: flex; flex-direction: column; gap: 12px;
+            transition: opacity 0.8s ease;
+        }
+        .void-input {
+            width: 100%; background: transparent; border: none; 
+            border-bottom: 1px solid rgba(255, 202, 153, 0.2);
+            color: #ffca99; font-family: 'Quicksand', sans-serif; text-align: center;
+            padding: 10px; font-size: 0.95rem;
+        }
+
+        /* --- MODE 2: WHISPER (COURIER LOGIC) --- */
+        #mainContent { display: none; opacity: 0; transition: opacity 1s ease; }
+        canvas { position: fixed; top: 0; left: 0; z-index: 1; pointer-events: none; }
+
+        #introLayer {
+            position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%);
+            z-index: 150; text-align: center; display: flex; flex-direction: column; align-items: center;
+        }
+        .prompt-text {
+            font-size: 1.8rem; color: #ffca99; cursor: pointer; background: rgba(255, 255, 255, 0.08);
+            padding: 10px 30px; border-radius: 30px; border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        #netCursor {
+            position: fixed; pointer-events: none; z-index: 9999;
+            width: 65px; height: 65px; border: 1.5px solid #fff; border-radius: 50%;
+            display: none; margin-left: -85px; margin-top: -110px;
+        }
+        #netCursor::after {
+            content: ''; position: absolute; top: 50%; left: 50%;
+            width: 4px; height: 120px; background: linear-gradient(to bottom, #5d4037, #1a0f0a);
+            transform-origin: top center; transform: rotate(-35deg); border-radius: 2px;
+        }
+
+        #netDock { position: fixed; bottom: 30px; right: 30px; width: 70px; height: 70px; background: rgba(255,255,255,0.05); border: 2px dashed rgba(255,255,255,0.2); border-radius: 50%; z-index: 100; display: flex; align-items: center; justify-content: center; }
+
+        .wrapper { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 85%; max-width: 350px; z-index: 200; opacity: 0; pointer-events: none; transition: opacity 0.8s; }
+        .wrapper.active { opacity: 1; pointer-events: auto; }
+        .container { background: rgba(10, 5, 0, 0.98); padding: 35px; border-radius: 35px; border: 1px solid rgba(255,255,255,0.05); text-align: center; }
+
+        #message {
+            width: 100%; background: transparent; border: none; border-bottom: 1px solid rgba(255, 202, 153, 0.2);
+            color: #fff; font-family: 'Quicksand', sans-serif; padding: 15px; font-size: 1.1rem; height: 80px; resize: none;
+        }
+
+        .submit-btn { background: #ff4500; border: none; color: #000; padding: 12px 50px; border-radius: 50px; font-weight: bold; cursor: pointer; margin-top: 15px; font-size: 1.1rem; }
+
+        .word-soul { position: fixed; pointer-events: none; z-index: 250; font-size: 1.8rem; color: #ffca99; text-shadow: 0 0 15px #ff4500; opacity: 0; font-family: 'Shadows Into Light'; }
+
+        #popupOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); z-index: 500; display: none; align-items: center; justify-content: center; padding: 40px; text-align: center; font-size: 1.8rem; color: #ffca99; }
+        .info-sub { font-family: 'Quicksand'; font-size: 0.75rem; opacity: 0.4; letter-spacing: 0.5px; }
+    </style>
+</head>
+<body>
+
+    <button class="back-home" id="backBtn" onclick="location.reload()">Return</button>
+
+    <div id="splashScreen">
+        <img src="https://i.imgur.com/7vlpCCX.png" class="splash-logo">
+        <div class="mode-container">
+            <button class="go-btn" onclick="enterMode('breathe')">BREATH</button>
+            <button class="go-btn" onclick="enterMode('whisper')">WHISPER</button>
+        </div>
+        <button class="go-btn" style="margin-top: 20px; padding: 8px 25px; font-size: 1.2rem;" onclick="window.location.href='index.html'">Back</button>
+    </div>
+
+    <div id="voidMode">
+        <div class="circle"></div>
+        <p id="breathe-text" style="margin-top: 25px; letter-spacing: 4px; opacity: 0.6;">breathe in...</p>
+        <div id="rantContainer">
+            <p class="info-sub">no strings attached. no one can read it.</p>
+            <input type="text" id="voidDear" class="void-input" placeholder="dear...">
+            <textarea id="voidMessage" class="void-input" placeholder="your message..." style="height: 60px; resize: none;"></textarea>
+            <input type="text" id="voidFrom" class="void-input" placeholder="from...">
+            <button class="submit-btn" style="background: transparent; border: 1px solid #ff4500; color: #ff4500;" onclick="releaseRant()">Release</button>
+        </div>
+    </div>
+
+    <div id="mainContent">
+        <canvas id="canvas"></canvas>
+        <div id="netDock" onmousedown="startDrag(event)" ontouchstart="startDrag(event)">
+            <div style="width:25px; height:25px; border:1px solid #fff; border-radius:50%; opacity: 0.3;"></div>
+        </div>
+        <div id="netCursor"></div>
+        <div id="introLayer">
+            <img src="https://i.imgur.com/7vlpCCX.png" style="width:140px; filter: drop-shadow(0 0 20px #ffaa00); margin-bottom: 5px;">
+            <div class="prompt-text" onclick="openRelease()">Release a Whisper</div>
+            <p class="info-sub" style="margin-top: 10px;">these whispers stay. passersby can read them.</p>
+        </div>
+        <div id="popupOverlay" onclick="this.style.display='none'"></div>
+        <div class="wrapper" id="mainBox">
+            <div class="container">
+                <form id="whisperForm">
+                    <input type="text" id="whisperDear" class="void-input" placeholder="dear..." style="margin-bottom: 10px;">
+                    <textarea id="message" placeholder="whisper your heart out..." required></textarea>
+                    <input type="text" id="whisperFrom" class="void-input" placeholder="from..." style="margin-top: 10px;">
+                    <button type="submit" id="submitBtn" class="submit-btn">Release</button>
+                </form>
+                <p onclick="closeRelease()" style="margin-top:20px; opacity:0.3; font-size:0.8rem; cursor:pointer;">Nevermind</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const BREATHE_SCRIPT = 'https://script.google.com/macros/s/AKfycbwLEWZicVPs8M7Q_DEYYD6G8KBzRJILCKF-zYttEVK-mJ8ez7fmX1DWSPJGvmf-9Yn0/exec';
+        const WHISPER_SCRIPT = 'https://script.google.com/macros/s/AKfycbwplHhFTO-yZhvTHrrGsuRg6VwkzUxFV8n5ru4ZyjC8S6di6ezM8A9xC2zsKtpbcw8fng/exec';
+
+        const canvas = document.getElementById('canvas'), ctx = canvas.getContext('2d');
+        const net = document.getElementById('netCursor'), intro = document.getElementById('introLayer'), wrapper = document.getElementById('mainBox');
+        let particles = [], dragging = false, mouseX = 0, mouseY = 0, activeMode = '';
+
+        function enterMode(mode) {
+            activeMode = mode;
+            document.getElementById('splashScreen').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('splashScreen').style.display = 'none';
+                document.getElementById('backBtn').style.display = 'block';
+                if(mode === 'whisper') { document.getElementById('mainContent').style.display = 'block'; document.getElementById('mainContent').style.opacity = '1'; init(); animate(); }
+                else { document.getElementById('voidMode').style.display = 'flex'; startBreathingCycle(); }
+            }, 800);
+        }
+
+        function startBreathingCycle() {
+            const bText = document.getElementById('breathe-text');
+            setInterval(() => { if(activeMode === 'breathe') bText.innerText = bText.innerText === "breathe in..." ? "breathe out..." : "breathe in..."; }, 4000);
+        }
+
+        function releaseRant() {
+            const d = document.getElementById('voidDear'), m = document.getElementById('voidMessage'), f = document.getElementById('voidFrom'), container = document.getElementById('rantContainer');
+            if(!m.value.trim()) return;
+            const payload = `dear: ${d.value}\nmessage: ${m.value}\nfrom: ${f.value}`;
+            fetch(BREATHE_SCRIPT, { method: 'POST', mode: 'no-cors', body: JSON.stringify({message: payload})});
+            container.style.opacity = '0'; container.style.pointerEvents = 'none';
+            animateWords(m.value, () => { setTimeout(() => { d.value = ''; m.value = ''; f.value = ''; container.style.opacity = '1'; container.style.pointerEvents = 'auto'; }, 2000); });
+        }
+
+        function init() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; particles = []; for(let i=0; i<220; i++) particles.push(new Particle()); }
+
+        class Particle {
+            constructor() {
+                this.isCarrier = Math.random() > 0.92;
+                this.x = Math.random() * canvas.width;
+                this.y = this.isCarrier ? Math.random() * (canvas.height * 0.45) : Math.random() * canvas.height;
+                this.size = this.isCarrier ? 4.5 : 2;
+                this.vx = (Math.random() - 0.5) * 0.4; this.vy = (Math.random() - 0.5) * 0.4;
+            }
+            draw() {
+                ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI*2);
+                ctx.fillStyle = this.isCarrier ? "#ffca99" : "#ff330044";
+                if(this.isCarrier) { ctx.shadowBlur = 15; ctx.shadowColor = "#ffaa00"; }
+                ctx.fill(); ctx.shadowBlur = 0;
+            }
+            sparkle() {
+                for(let i=0; i<15; i++) {
+                    const el = document.createElement('div');
+                    el.style.position = 'fixed'; el.style.left = this.x + 'px'; el.style.top = this.y + 'px';
+                    el.style.width = '4px'; el.style.height = '4px'; el.style.backgroundColor = '#ffca99';
+                    el.style.borderRadius = '50%'; el.style.pointerEvents = 'none'; el.style.zIndex = '1000';
+                    el.style.boxShadow = '0 0 10px #ffaa00'; document.body.appendChild(el);
+                    el.animate([{ transform: 'translate(0,0) scale(1)', opacity: 1 }, { transform: `translate(${(Math.random()-0.5)*150}px, ${(Math.random()-0.5)*150}px) scale(0)`, opacity: 0 }], { duration: 1000, easing: 'ease-out' }).onfinish = () => el.remove();
+                }
+            }
+            update() {
+                if(this.isCarrier && dragging) {
+                    const d = Math.hypot(this.x - mouseX, this.y - mouseY);
+                    if(d < 100) { this.vx += (mouseX - this.x) * 0.001; this.vy += (mouseY - this.y) * 0.001; }
+                    if(d < 40) { this.sparkle(); particles.splice(particles.indexOf(this), 1); dragging = false; net.style.display = 'none'; catchSoul(); return; }
+                }
+                this.x += this.vx; this.y += this.vy;
+                if(this.x<0 || this.x>canvas.width) this.vx *= -1;
+                const bottomLimit = this.isCarrier ? canvas.height * 0.5 : canvas.height;
+                if(this.y<0 || this.y>bottomLimit) this.vy *= -1;
+            }
+        }
+
+        async function catchSoul() {
+            const overlay = document.getElementById('popupOverlay'); overlay.style.display = 'flex';
+            overlay.innerHTML = `<div><p style="font-size: 2.5rem; margin-bottom: 10px;">✨ Wow! You caught one! ✨</p><p class="info-sub" style="opacity: 0.8;">Unfolding a drifting whisper...</p></div>`;
+            try {
+                const res = await fetch(WHISPER_SCRIPT);
+                const data = await res.json();
+                setTimeout(() => {
+                    overlay.innerHTML = `<div style="max-width: 80%; line-height: 1.6; white-space: pre-wrap; font-family: 'Quicksand'; font-size: 1.1rem; color: #ffca99;">${data.message || "The whisper was but a sigh..."}<p class="info-sub" style="margin-top: 25px; font-size: 0.9rem; opacity: 0.5;">(tap to release back to the void)</p></div>`;
+                }, 1800);
+            } catch(e) { setTimeout(() => { overlay.innerText = "The shadows held tight."; }, 1500); }
+        }
+
+        document.getElementById('whisperForm').onsubmit = function(e) {
+            e.preventDefault();
+            const d = document.getElementById('whisperDear').value, m = document.getElementById('message').value, f = document.getElementById('whisperFrom').value;
+            const btn = document.getElementById('submitBtn'); btn.disabled = true;
+            wrapper.classList.remove('active');
+            
+            // Format data as URLSearchParams to ensure Google Script reads it via e.parameter
+            const params = new URLSearchParams();
+            params.append('dear', d);
+            params.append('message', m);
+            params.append('from', f);
+
+            animateWords(m, () => { setTimeout(() => { intro.style.opacity = '1'; btn.disabled = false; document.getElementById('whisperForm').reset(); }, 2000); });
+            
+            fetch(WHISPER_SCRIPT, { 
+                method: 'POST', 
+                mode: 'no-cors', 
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: params.toString()
+            });
+        };
+
+        function animateWords(msg, callback) {
+            const words = msg.split(' '); let completed = 0;
+            words.forEach((w, i) => {
+                setTimeout(() => {
+                    const el = document.createElement('div'); el.className = 'word-soul'; el.innerText = w;
+                    el.style.left = '50%'; el.style.top = '50%'; document.body.appendChild(el);
+                    const anim = el.animate([{ opacity: 0, transform: 'translate(-50%, -50%) scale(0.9)' }, { opacity: 1, offset: 0.15 }, { opacity: 0, transform: `translate(${(Math.random()-0.5)*250}px, -250px) scale(0.6)` }], { duration: 5500, easing: 'ease-out' });
+                    anim.onfinish = () => { el.remove(); particles.push(new Particle()); completed++; if(completed === words.length && callback) callback(); };
+                }, i * 280);
+            });
+        }
+
+        function animate() { if(activeMode === 'whisper') { ctx.clearRect(0,0,canvas.width,canvas.height); particles.forEach(p => { p.update(); p.draw(); }); requestAnimationFrame(animate); } }
+        function startDrag(e) { dragging = true; net.style.display = 'block'; updateMouse(e); }
+        function updateMouse(e) { mouseX = e.touches ? e.touches[0].clientX : e.clientX; mouseY = e.touches ? e.touches[0].clientY : e.clientY; net.style.left = mouseX + 'px'; net.style.top = mouseY + 'px'; }
+        window.onmousemove = window.ontouchmove = (e) => { if(dragging) updateMouse(e); };
+        window.onmouseup = window.ontouchend = () => { dragging = false; net.style.display = 'none'; };
+        function openRelease() { wrapper.classList.add('active'); intro.style.opacity = '0'; }
+        function closeRelease() { wrapper.classList.remove('active'); intro.style.opacity = '1'; }
+    </script>
+</body>
+</html>

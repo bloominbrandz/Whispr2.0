@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Edit Profile | Whispers</title>
+<link href="https://fonts.googleapis.com/css2?family=Shadows+Into+Light&display=swap" rel="stylesheet">
+<style>
+/* EMBER ALERT */
+.ember-alert{
+    position:fixed;
+    top:20px;
+    left:50%;
+    transform:translateX(-50%) scale(.9);
+    background:rgba(255,69,0,0.08);
+    border:1px solid rgba(255,69,0,0.4);
+    color:#ff4500;
+    padding:12px 22px;
+    border-radius:30px;
+    font-size:0.95rem;
+    opacity:0;
+    pointer-events:none;
+    box-shadow:0 0 15px rgba(255,69,0,0.4);
+    transition:all .35s ease;
+    z-index:9999;
+}
+.ember-alert.show{
+    opacity:1;
+    transform:translateX(-50%) scale(1);
+}
+
+/* CONFIRM MODAL */
+.confirm-modal{
+    position:fixed;
+    top:0; left:0; width:100%; height:100%;
+    background:rgba(0,0,0,0.95);
+    z-index:10000;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+}
+.confirm-content{
+    background:rgba(10,5,2,0.95);
+    border:1px solid rgba(255,69,0,0.3);
+    border-radius:20px;
+    padding:30px;
+    max-width:400px;
+    width:100%;
+    text-align:center;
+}
+.confirm-title{
+    font-size:1.5rem;
+    color:#ff4500;
+    margin-bottom:15px;
+}
+.confirm-text{
+    font-family:'Quicksand',sans-serif;
+    color:rgba(255,255,255,0.7);
+    margin-bottom:25px;
+    line-height:1.5;
+}
+.confirm-buttons{
+    display:flex;
+    gap:15px;
+    justify-content:center;
+}
+.confirm-btn{
+    padding:10px 25px;
+    border-radius:25px;
+    border:1px solid rgba(255,69,0,0.5);
+    background:transparent;
+    color:#ff4500;
+    cursor:pointer;
+    font-family:'Shadows Into Light',cursive;
+    font-size:1rem;
+    transition:all 0.3s;
+}
+.confirm-btn:hover{
+    background:#ff4500;
+    color:black;
+}
+.confirm-btn.danger{
+    background:#ff4500;
+    color:black;
+}
+.confirm-btn.danger:hover{
+    background:#ff6347;
+    box-shadow:0 0 15px rgba(255,69,0,0.5);
+}
+
+body{
+    margin:0;
+    padding:20px;
+    background:#050200;
+    font-family:'Shadows Into Light',cursive;
+    color:white;
+    min-height:100vh;
+}
+
+.container{
+    width:90%;
+    max-width:500px;
+    margin:0 auto;
+    background:rgba(255,255,255,0.03);
+    border:1px solid rgba(255,69,0,0.3);
+    border-radius:25px;
+    padding:30px;
+    box-shadow:0 0 20px rgba(255,69,0,0.15);
+}
+
+h2{text-align:center; margin-bottom:25px; font-size:1.8rem;}
+
+.section{
+    margin-bottom:30px;
+    padding-bottom:25px;
+    border-bottom:1px solid rgba(255,69,0,0.2);
+}
+.section:last-of-type{
+    border-bottom:none;
+}
+.section-title{
+    font-size:1.2rem;
+    color:#ffaa00;
+    margin-bottom:15px;
+}
+
+label{
+    display:block;
+    font-size:0.9rem;
+    opacity:.8;
+    margin-bottom:5px;
+    margin-top:15px;
+}
+input, textarea{
+    width:100%;
+    padding:12px;
+    border-radius:10px;
+    border:1px solid rgba(255,69,0,0.3);
+    background:rgba(255,255,255,0.05);
+    color:white;
+    font-family:'Quicksand',sans-serif;
+    font-size:0.95rem;
+    resize:none;
+}
+input:focus, textarea:focus{
+    outline:none;
+    border-color:#ff4500;
+    box-shadow:0 0 8px rgba(255,69,0,0.5);
+}
+textarea{
+    min-height:80px;
+    font-family:'Shadows Into Light',cursive;
+}
+
+button{
+    width:100%;
+    padding:12px;
+    border-radius:25px;
+    border:1px solid rgba(255,69,0,0.5);
+    background:transparent;
+    color:#ff4500;
+    font-family:'Shadows Into Light',cursive;
+    cursor:pointer;
+    margin-top:15px;
+    font-size:1.1rem;
+    transition:all 0.3s;
+}
+button:hover{
+    background:#ff4500;
+    color:black;
+    box-shadow:0 0 15px rgba(255,69,0,0.5);
+}
+button:disabled{
+    opacity:0.5;
+    cursor:not-allowed;
+}
+
+.delete-btn{
+    border-color:#ff0000;
+    color:#ff0000;
+}
+.delete-btn:hover{
+    background:#ff0000;
+    box-shadow:0 0 15px rgba(255,0,0,0.5);
+}
+
+.back{
+    margin-top:25px;
+    font-size:.9rem;
+    text-align:center;
+    cursor:pointer;
+    opacity:.7;
+    padding:10px;
+}
+.back:hover{
+    opacity:1;
+    text-decoration:underline;
+}
+
+.info-text{
+    font-family:'Quicksand',sans-serif;
+    font-size:0.8rem;
+    color:rgba(255,255,255,0.5);
+    margin-top:5px;
+}
+</style>
+</head>
+<body>
+
+<div id="emberAlert" class="ember-alert"></div>
+
+<!-- Delete Account Confirmation Modal -->
+<div id="deleteModal" class="confirm-modal">
+    <div class="confirm-content">
+        <div class="confirm-title">⚠️ Delete Account?</div>
+        <div class="confirm-text">
+            This will permanently delete your account and all your whispers. 
+            This action cannot be undone.
+        </div>
+        <div class="confirm-buttons">
+            <button class="confirm-btn" onclick="closeDeleteModal()">Cancel</button>
+            <button class="confirm-btn danger" onclick="confirmDeleteAccount()">Delete Forever</button>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <h2>Edit Profile</h2>
+
+    <!-- Profile Info Section -->
+    <div class="section">
+        <div class="section-title">👤 Profile Info</div>
+        
+        <label>Email</label>
+        <input type="email" id="emailInput" readonly>
+        
+        <label>Username</label>
+        <input type="text" id="usernameInput" placeholder="Enter username">
+        
+        <label>Bio</label>
+        <textarea id="bioInput" placeholder="Tell us about yourself..."></textarea>
+        <div class="info-text">Max 150 characters</div>
+        
+        <button id="saveProfileBtn" onclick="saveProfile()">Save Profile</button>
+    </div>
+
+    <!-- Security Section -->
+    <div class="section">
+        <div class="section-title">🔒 Security</div>
+        
+        <label>New Password</label>
+        <input type="password" id="passwordInput" placeholder="Enter new password">
+        <div class="info-text">Leave blank to keep current password</div>
+        
+        <button id="changePasswordBtn" onclick="changePassword()">Change Password</button>
+    </div>
+
+    <!-- Danger Zone -->
+    <div class="section">
+        <div class="section-title" style="color:#ff0000;">⚠️ Danger Zone</div>
+        <button class="delete-btn" onclick="showDeleteModal()">Delete Account</button>
+    </div>
+
+    <div class="back" onclick="window.location.href='profile.html'">← Back to Profile</div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";  
+import { getFirestore, doc, getDoc, updateDoc, deleteDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getAuth, updateProfile, updatePassword, deleteUser, onAuthStateChanged, reauthenticateWithCredential, EmailAuthProvider } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBSmm2lC7iAMmQJqsG_jXi4DWpL7ghcJnc",
+  authDomain: "whispr-92fc0.firebaseapp.com",
+  projectId: "whispr-92fc0",
+  storageBucket: "whispr-92fc0.firebasestorage.app",
+  messagingSenderId: "133594748424",
+  appId: "1:133594748424:web:7dc7ff44e105d2d5cee3bd"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+
+let currentUser = null;
+
+// Show alert
+function showAlert(message = "Updated!", duration = 2500){
+    const alertBox = document.getElementById("emberAlert");
+    alertBox.textContent = message;
+    alertBox.classList.add("show");
+    setTimeout(()=>alertBox.classList.remove("show"), duration);
+}
+
+// Load current user info
+onAuthStateChanged(auth, async user => {
+    if(user){
+        currentUser = user;
+        document.getElementById("emailInput").value = user.email;
+
+        const docRef = doc(db, "users", user.uid);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+            const data = docSnap.data();
+            document.getElementById("usernameInput").value = data.username || user.displayName || '';
+            document.getElementById("bioInput").value = data.bio || '';
+        } else {
+            document.getElementById("usernameInput").value = user.displayName || '';
+        }
+    } else {
+        window.location.href = "login.html";
+    }
+});
+
+// Save profile (username + bio)
+async function saveProfile() {
+    if(!currentUser) return;
+    
+    const username = document.getElementById("usernameInput").value.trim();
+    const bio = document.getElementById("bioInput").value.trim();
+    
+    if(!username){
+        showAlert("Username cannot be empty");
+        return;
+    }
+    
+    if(bio.length > 150){
+        showAlert("Bio must be under 150 characters");
+        return;
+    }
+
+    try{
+        await updateProfile(currentUser, { displayName: username });
+        await updateDoc(doc(db, "users", currentUser.uid), { 
+            username: username,
+            bio: bio 
+        });
+        showAlert("Profile saved ✅");
+    } catch(err){
+        console.error(err);
+        showAlert("Failed to save profile");
+    }
+}
+window.saveProfile = saveProfile;
+
+// Change password
+async function changePassword() {
+    if(!currentUser) return;
+    
+    const newPassword = document.getElementById("passwordInput").value;
+    if(!newPassword){
+        showAlert("Enter a new password");
+        return;
+    }
+    if(newPassword.length < 6){
+        showAlert("Password must be at least 6 characters");
+        return;
+    }
+
+    try{
+        await updatePassword(currentUser, newPassword);
+        showAlert("Password updated ✅");
+        document.getElementById("passwordInput").value = "";
+    }catch(err){
+        console.error(err);
+        let msg = "Failed to update password";
+        if(err.code === "auth/requires-recent-login") msg = "Please log in again";
+        showAlert(msg);
+    }
+}
+window.changePassword = changePassword;
+
+// Show delete modal
+function showDeleteModal() {
+    document.getElementById('deleteModal').style.display = 'flex';
+}
+window.showDeleteModal = showDeleteModal;
+
+function closeDeleteModal() {
+    document.getElementById('deleteModal').style.display = 'none';
+}
+window.closeDeleteModal = closeDeleteModal;
+
+// Confirm delete account
+async function confirmDeleteAccount() {
+    if(!currentUser) return;
+    
+    try {
+        // Delete user's whispers
+        const whispersQuery = query(collection(db, "whispers"), where("uid", "==", currentUser.uid));
+        const whispersSnap = await getDocs(whispersQuery);
+        const deletePromises = [];
+        
+        whispersSnap.forEach(docSnap => {
+            deletePromises.push(deleteDoc(docSnap.ref));
+        });
+        
+        await Promise.all(deletePromises);
+        
+        // Delete user document
+        await deleteDoc(doc(db, "users", currentUser.uid));
+        
+        // Delete auth account
+        await deleteUser(currentUser);
+        
+        showAlert("Account deleted");
+        setTimeout(() => {
+            window.location.href = "login.html";
+        }, 1500);
+        
+    } catch(err) {
+        console.error(err);
+        let msg = "Failed to delete account";
+        if(err.code === "auth/requires-recent-login") {
+            msg = "Please log in again before deleting";
+        }
+        showAlert(msg);
+        closeDeleteModal();
+    }
+}
+window.confirmDeleteAccount = confirmDeleteAccount;
+
+// Close modal on outside click
+document.getElementById('deleteModal').addEventListener('click', (e) => {
+    if(e.target === e.currentTarget) closeDeleteModal();
+});
+</script>
+
+</body>
+</html>

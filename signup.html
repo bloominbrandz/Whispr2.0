@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign Up | Whispers</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Shadows+Into+Light&display=swap" rel="stylesheet">
+
+<style>
+* { box-sizing: border-box; }
+
+body{
+background:#050200;
+color:white;
+font-family:'Shadows Into Light',cursive;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+margin:0;
+}
+
+.container{
+background:rgba(255,255,255,0.05);
+padding:30px;
+border-radius:15px;
+width:320px;
+display:flex;
+flex-direction:column;
+gap:15px;
+box-shadow:0 4px 20px rgba(255,69,0,0.1);
+}
+
+h2{
+margin:0 0 10px 0;
+text-align:center;
+color:#ff4500;
+}
+
+input,button{
+padding:12px;
+border-radius:10px;
+border:1px solid rgba(255,69,0,0.3);
+background:rgba(255,255,255,0.05);
+color:white;
+outline:none;
+font-family:inherit;
+font-size:14px;
+}
+
+input:focus{
+border-color:#ff4500;
+background:rgba(255,255,255,0.08);
+}
+
+input::placeholder{
+color:rgba(255,255,255,0.4);
+}
+
+button{
+border:none;
+background:#ff4500;
+cursor:pointer;
+font-weight:bold;
+transition:all .3s ease;
+margin-top:5px;
+}
+
+button:hover{
+background:#ff6347;
+transform:translateY(-2px);
+box-shadow:0 4px 12px rgba(255,69,0,0.3);
+}
+
+button:disabled{
+background:#666;
+cursor:not-allowed;
+transform:none;
+}
+
+#msg{
+margin:0;
+font-size:12px;
+text-align:center;
+min-height:20px;
+color:#ff6347;
+}
+
+.login-link{
+text-align:center;
+font-size:12px;
+margin-top:10px;
+color:rgba(255,255,255,0.6);
+}
+
+.login-link a{
+color:#ff4500;
+text-decoration:none;
+}
+
+.login-link a:hover{
+text-decoration:underline;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>Sign Up</h2>
+
+<input type="text" id="username" placeholder="Username (3-30 chars)" maxlength="30">
+
+<input type="email" id="email" placeholder="Email">
+
+<input type="password" id="password" placeholder="Password (min 6 chars)">
+
+<button id="signupBtn">Sign Up</button>
+
+<p id="msg"></p>
+
+<div class="login-link">
+Already have an account? <a href="login.html">Login</a>
+</div>
+
+</div>
+
+
+<!-- Firebase -->
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+getAuth,
+createUserWithEmailAndPassword
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+import {
+getFirestore,
+doc,
+setDoc,
+getDoc,
+serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+
+
+const firebaseConfig = {
+apiKey: "AIzaSyBSmm2lC7iAMmQJqsG_jXi4DWpL7ghcJnc",
+authDomain: "whispr-92fc0.firebaseapp.com",
+projectId: "whispr-92fc0",
+storageBucket: "whispr-92fc0.firebasestorage.app",
+messagingSenderId: "133594748424",
+appId: "1:133594748424:web:7dc7ff44e105d2d5cee3bd"
+};
+
+
+const app = initializeApp(firebaseConfig);
+
+const auth = getAuth(app);
+
+const db = getFirestore(app);
+
+
+
+function validateUsername(username){
+return /^[a-zA-Z0-9_]{3,30}$/.test(username);
+}
+
+
+
+function showMessage(text,isError=true){
+
+const msg=document.getElementById("msg");
+
+msg.textContent=text;
+
+msg.style.color=isError ? "#ff6347" : "#4CAF50";
+
+}
+
+
+
+document.getElementById("signupBtn").addEventListener("click",async()=>{
+
+const username=document.getElementById("username").value.trim();
+
+const email=document.getElementById("email").value.trim().toLowerCase();
+
+const password=document.getElementById("password").value;
+
+const btn=document.getElementById("signupBtn");
+
+
+
+if(!username||!email||!password){
+
+showMessage("All fields required");
+
+return;
+
+}
+
+
+
+if(!validateUsername(username)){
+
+showMessage("Username must be 3-30 letters, numbers or underscore");
+
+return;
+
+}
+
+
+
+if(password.length<6){
+
+showMessage("Password must be at least 6 characters");
+
+return;
+
+}
+
+
+
+btn.disabled=true;
+
+showMessage("Creating account...",false);
+
+
+
+try{
+
+
+// check if username exists
+
+const usernameRef=doc(db,"usernames",username.toLowerCase());
+
+const usernameSnap=await getDoc(usernameRef);
+
+
+
+if(usernameSnap.exists()){
+
+showMessage("Username already taken");
+
+btn.disabled=false;
+
+return;
+
+}
+
+
+
+// create auth user
+
+const userCredential=await createUserWithEmailAndPassword(auth,email,password);
+
+const user=userCredential.user;
+
+
+
+// create profile
+
+await setDoc(doc(db,"users",user.uid),{
+
+uid:user.uid,
+
+username:username,
+
+email:email,
+
+displayName:username,
+
+avatarUrl:`https://ui-avatars.com/api/?name=${encodeURIComponent(username)}&background=ff4500&color=fff`,
+
+status:"online",
+
+createdAt:serverTimestamp()
+
+});
+
+
+
+// save username index
+
+await setDoc(usernameRef,{
+
+uid:user.uid
+
+});
+
+
+
+showMessage("Account created! Redirecting...",false);
+
+
+
+setTimeout(()=>{
+
+window.location.href="message.html";
+
+},1000);
+
+
+
+}catch(e){
+
+showMessage(e.message);
+
+btn.disabled=false;
+
+}
+
+});
+
+
+
+// ENTER key support
+
+document.querySelectorAll("input").forEach(input=>{
+
+input.addEventListener("keypress",(e)=>{
+
+if(e.key==="Enter"){
+
+document.getElementById("signupBtn").click();
+
+}
+
+});
+
+});
+
+</script>
+
+</body>
+</html>

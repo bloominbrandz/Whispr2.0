@@ -1,0 +1,226 @@
+<!-- enter.html - Enhanced Mode Selection -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Whispers | Choose Mode</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Shadows+Into+Light&family=Quicksand:wght@300;500&display=swap" rel="stylesheet">
+
+<style>
+* { box-sizing: border-box; }
+
+body, html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #050200;
+    font-family: 'Shadows Into Light', cursive;
+    color: #ffca99;
+    overflow: hidden;
+}
+
+/* Top nav strip - Unified with orange accents */
+#navStrip {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    gap: 10px;
+    z-index: 9999;
+}
+
+.nav-item {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,69,0,0.3);
+    color: #ffca99;
+    padding: 5px 7px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(5px);
+}
+
+.nav-item:hover {
+    background: rgba(255,69,0,0.15);
+    border-color: #ff4500;
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255,69,0,0.3);
+}
+
+/* Splash container - Centered with proper spacing */
+.splash-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+.splash-container img {
+    width: 180px;
+    filter: drop-shadow(0 0 20px #ffaa00);
+    margin-bottom: 30px;
+}
+
+/* Unified button styling matching whisper theme */
+.go-btn {
+    background: #ff4500;
+    border: none;
+    color: #000;
+    padding: 8px 50px;
+    border-radius: 50px;
+    font-family: 'Shadows Into Light', cursive;
+    font-size: 1.3rem;
+    font-weight: bold;
+    cursor: pointer;
+    width: 220px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 20px rgba(255,69,0,0.2);
+}
+
+.go-btn:hover {
+    background: #ff6347;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(255,69,0,0.4);
+}
+
+.go-btn:active {
+    transform: translateY(0);
+}
+
+/* Logout button */
+.logout-btn {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,69,0,0.3);
+    color: rgba(255,255,255,0.6);
+    padding: 8px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-family: 'Quicksand', sans-serif;
+    font-size: 0.8rem;
+    transition: all 0.3s ease;
+}
+
+.logout-btn:hover {
+    background: rgba(255,69,0,0.15);
+    border-color: #ff4500;
+    color: #ffca99;
+}
+
+/* User info display - Compact Version */
+.user-info {
+    position: fixed;
+    top: 25px; /* Reduced from 20px */
+    left: 12px; /* Reduced from 20px */
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 69, 0, 0.2); /* Thinner border */
+    color: #ffca99;
+    padding: 5px 10px; /* Slimmer padding */
+    border-radius: 12px; /* Sharper, cleaner corners */
+    font-family: 'Quicksand', sans-serif;
+    font-size: 0.7rem; /* Smaller text */
+    letter-spacing: 0.5px;
+    backdrop-filter: blur(3px); /* Lighter blur for performance */
+    z-index: 10000;
+}
+
+
+</style>
+</head>
+<body>
+
+<div class="user-info" id="userInfo">Loading...</div>
+
+<div id="navStrip">
+    <div class="nav-item" onclick="goToPage('search.html')" title="Search">🔍</div>
+    <div class="nav-item" onclick="goToPage('notifications.html')" title="Notifications">🔔</div>
+    <div class="nav-item" onclick="goToPage('message.html')" title="Messages">✉️</div>
+    <div class="nav-item" onclick="goToPage('profile.html')" title="Profile">👤</div>
+    
+</div>
+
+<div class="splash-container">
+    <img src="https://i.imgur.com/7vlpCCX.png" alt="Whispers Logo">
+    <button class="go-btn" onclick="goToPage('breathe.html')">BREATHE</button>
+    <button class="go-btn" onclick="goToPage('whisper.html')">WHISPER</button>
+</div>
+
+<button class="logout-btn" onclick="logout()">Logout</button>
+
+<!-- Firebase Modular SDK -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyBSmm2lC7iAMmQJqsG_jXi4DWpL7ghcJnc",
+    authDomain: "whispr-92fc0.firebaseapp.com",
+    projectId: "whispr-92fc0",
+    storageBucket: "whispr-92fc0.firebasestorage.app",
+    messagingSenderId: "133594748424",
+    appId: "1:133594748424:web:7dc7ff44e105d2d5cee3bd"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+// Make functions global
+window.goToPage = function(url) {
+    const user = auth.currentUser;
+    if(user) {
+        window.location.href = url;
+    } else {
+        alert("You must log in first.");
+        window.location.href = "login.html";
+    }
+};
+
+window.logout = async function() {
+    try {
+        await signOut(auth);
+        window.location.href = "login.html";
+    } catch(e) {
+        console.error("Logout error:", e);
+    }
+};
+
+// Auth state listener
+onAuthStateChanged(auth, async user => {
+    if(!user) {
+        window.location.href = "login.html";
+        return;
+    }
+    
+    // Get user info for display
+    try {
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        if(userDoc.exists()) {
+            const data = userDoc.data();
+            const username = data.username || data.displayName || user.displayName || "Whisperer";
+            document.getElementById('userInfo').textContent = `👤 ${username}`;
+        } else {
+            document.getElementById('userInfo').textContent = `👤 ${user.displayName || "Whisperer"}`;
+        }
+    } catch(e) {
+        document.getElementById('userInfo').textContent = `👤 ${user.displayName || "Whisperer"}`;
+    }
+});
+</script>
+</body>
+</html>

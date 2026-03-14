@@ -1,0 +1,409 @@
+<!-- notifications.html - Compact Single Screen -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Whispers | Echoes</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Shadows+Into+Light&family=Quicksand:wght@300;500&display=swap" rel="stylesheet">
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body, html {
+    width: 100%;
+    height: 100vh;
+    background: #050200;
+    font-family: 'Shadows Into Light', cursive;
+    color: #ffca99;
+    overflow: hidden;
+}
+
+/* Compact Header */
+.header {
+    height: 50px;
+    background: rgba(5, 2, 0, 0.95);
+    border-bottom: 1px solid rgba(255, 69, 0, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 15px;
+    flex-shrink: 0;
+}
+
+.back-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 69, 0, 0.3);
+    color: #ffca99;
+    padding: 6px 15px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-family: 'Quicksand', sans-serif;
+    font-size: 0.8rem;
+    transition: all 0.3s;
+}
+
+.back-btn:hover {
+    background: rgba(255, 69, 0, 0.15);
+    border-color: #ff4500;
+}
+
+.page-title {
+    font-size: 1.2rem;
+    color: #ff4500;
+}
+
+/* Compact Stats Row */
+.stats-row {
+    display: flex;
+    gap: 10px;
+    padding: 10px 15px;
+    border-bottom: 1px solid rgba(255, 69, 0, 0.2);
+}
+
+.stat-item {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 69, 0, 0.3);
+    border-radius: 10px;
+    padding: 8px;
+    text-align: center;
+}
+
+.stat-num {
+    font-size: 1.3rem;
+    color: #ff4500;
+    font-weight: bold;
+    display: block;
+}
+
+.stat-label {
+    font-family: 'Quicksand', sans-serif;
+    font-size: 0.65rem;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* Compact Tabs */
+.tabs {
+    display: flex;
+    padding: 0 15px;
+    border-bottom: 1px solid rgba(255, 69, 0, 0.2);
+    gap: 5px;
+}
+
+.tab {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.5);
+    padding: 8px 5px;
+    cursor: pointer;
+    font-family: 'Quicksand', sans-serif;
+    font-size: 0.75rem;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: all 0.3s;
+}
+
+.tab.active {
+    color: #ff4500;
+    border-bottom-color: #ff4500;
+}
+
+/* Scrollable Activity Area */
+.activity-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px 15px;
+}
+
+.activity-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+.activity-container::-webkit-scrollbar-thumb {
+    background: rgba(255, 69, 0, 0.5);
+    border-radius: 3px;
+}
+
+/* Compact Activity Cards */
+.activity-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 69, 0, 0.2);
+    border-radius: 10px;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s;
+    cursor: pointer;
+}
+
+.activity-card:hover {
+    background: rgba(255, 69, 0, 0.1);
+    border-color: rgba(255, 69, 0, 0.4);
+}
+
+.activity-icon {
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+.activity-main {
+    flex: 1;
+    min-width: 0;
+}
+
+.activity-text {
+    font-family: 'Quicksand', sans-serif;
+    font-size: 0.8rem;
+    color: #fff;
+    line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.activity-text strong {
+    color: #ffaa00;
+}
+
+.activity-meta {
+    font-family: 'Quicksand', sans-serif;
+    font-size: 0.65rem;
+    color: rgba(255, 255, 255, 0.4);
+    margin-top: 2px;
+}
+
+.whisper-snippet {
+    font-size: 0.75rem;
+    color: rgba(255, 202, 153, 0.7);
+    font-style: italic;
+    margin-top: 3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    opacity: 0.5;
+}
+
+.empty-icon {
+    font-size: 2rem;
+    margin-bottom: 10px;
+}
+
+.empty-text {
+    font-family: 'Quicksand', sans-serif;
+    font-size: 0.8rem;
+}
+
+/* Main Layout */
+.main {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 50px);
+}
+
+.section {
+    display: none;
+}
+
+.section.active {
+    display: block;
+}
+
+</style>
+</head>
+<body>
+
+<div class="header">
+    <button class="back-btn" onclick="window.location.href='enter.html'">← Back</button>
+    <div class="page-title">Your Echoes</div>
+    <div style="width: 60px;"></div>
+</div>
+
+<div class="main">
+    <!-- Compact Stats -->
+    <div class="stats-row">
+        <div class="stat-item">
+            <span class="stat-num" id="totalWhispers">0</span>
+            <span class="stat-label">Whispers</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-num" id="totalReactions">0</span>
+            <span class="stat-label">Reactions</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-num" id="totalComments">0</span>
+            <span class="stat-label">Comments</span>
+        </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+        <button class="tab active" onclick="showTab('all', this)">All</button>
+        <button class="tab" onclick="showTab('reactions', this)">Reactions</button>
+        <button class="tab" onclick="showTab('comments', this)">Comments</button>
+        <button class="tab" onclick="showTab('catches', this)">Catches</button>
+    </div>
+
+    <!-- Activity Lists -->
+    <div class="activity-container">
+        <div id="section-all" class="section active">
+            <div id="allActivityList"><div class="empty-state"><div class="empty-icon">🌙</div><div class="empty-text">Loading...</div></div></div>
+        </div>
+        <div id="section-reactions" class="section">
+            <div id="reactionsList"><div class="empty-state"><div class="empty-icon">🌙</div><div class="empty-text">No reactions yet</div></div></div>
+        </div>
+        <div id="section-comments" class="section">
+            <div id="commentsList"><div class="empty-state"><div class="empty-icon">🌙</div><div class="empty-text">No comments yet</div></div></div>
+        </div>
+        <div id="section-catches" class="section">
+            <div id="catchesList"><div class="empty-state"><div class="empty-icon">🌙</div><div class="empty-text">No catches yet</div></div></div>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { 
+    getFirestore, 
+    collection, 
+    query, 
+    where, 
+    orderBy, 
+    getDocs,
+    onSnapshot
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyBSmm2lC7iAMmQJqsG_jXi4DWpL7ghcJnc",
+    authDomain: "whispr-92fc0.firebaseapp.com",
+    projectId: "whispr-92fc0",
+    storageBucket: "whispr-92fc0.firebasestorage.app",
+    messagingSenderId: "133594748424",
+    appId: "1:133594748424:web:7dc7ff44e105d2d5cee3bd"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+let currentUser = null;
+let unsubscribers = [];
+
+window.showTab = function(tabName, btn) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(`section-${tabName}`).classList.add('active');
+};
+
+onAuthStateChanged(auth, async user => {
+    if(!user) { window.location.href = "login.html"; return; }
+    currentUser = user;
+    await loadActivity();
+});
+
+async function loadActivity() {
+    unsubscribers.forEach(u => u());
+    unsubscribers = [];
+    
+    const whispersSnap = await getDocs(query(collection(db, "whispers"), where("uid", "==", currentUser.uid)));
+    const whispers = [];
+    whispersSnap.forEach(d => whispers.push({ id: d.id, ...d.data() }));
+    
+    document.getElementById('totalWhispers').textContent = whispers.length;
+    
+    const all = [], reactions = [], comments = [], catches = [];
+    let reactCount = 0, commentCount = 0;
+    
+    for(const w of whispers) {
+        if(w.reactions) {
+            Object.entries(w.reactions).forEach(([uid, type]) => {
+                if(uid !== currentUser.uid) {
+                    reactCount++;
+                    const act = { type: 'reaction', icon: type, text: `Reacted ${type}`, time: w.timestamp, whisper: w.message, id: w.id };
+                    all.push(act); reactions.push(act);
+                }
+            });
+        }
+        
+        const unsub = onSnapshot(query(collection(db, "whispers", w.id, "comments"), orderBy("timestamp", "desc")), snap => {
+            snap.docChanges().forEach(c => {
+                if(c.type === "added") {
+                    const d = c.data();
+                    if(d.uid !== currentUser.uid) {
+                        commentCount++;
+                        const act = { type: 'comment', icon: '💬', text: `<strong>${d.from}</strong>: ${truncate(d.text, 30)}`, time: d.timestamp, whisper: w.message, id: w.id };
+                        all.push(act); comments.push(act);
+                        updateDisplay(all, reactions, comments, catches);
+                    }
+                }
+            });
+        });
+        unsubscribers.push(unsub);
+        
+        if((w.reactions && Object.keys(w.reactions).length > 0)) {
+            catches.push({ type: 'catch', icon: '🕸️', text: 'Caught in the void', time: w.timestamp, whisper: w.message, id: w.id });
+        }
+    }
+    
+    document.getElementById('totalReactions').textContent = reactCount;
+    document.getElementById('totalComments').textContent = commentCount;
+    updateDisplay(all, reactions, comments, catches);
+}
+
+function updateDisplay(all, reactions, comments, catches) {
+    const sort = (a, b) => (b.time?.toMillis?.() || 0) - (a.time?.toMillis?.() || 0);
+    [all, reactions, comments, catches].forEach(arr => arr.sort(sort));
+    
+    render('allActivityList', all);
+    render('reactionsList', reactions);
+    render('commentsList', comments);
+    render('catchesList', catches);
+}
+
+function render(id, items) {
+    const el = document.getElementById(id);
+    if(!items.length) {
+        el.innerHTML = '<div class="empty-state"><div class="empty-icon">🌙</div><div class="empty-text">The void is silent...</div></div>';
+        return;
+    }
+    el.innerHTML = items.map(i => `
+        <div class="activity-card" onclick="location.href='whisper.html#${i.id}'">
+            <span class="activity-icon">${i.icon}</span>
+            <div class="activity-main">
+                <div class="activity-text">${i.text}</div>
+                <div class="activity-meta">${formatTime(i.time)}</div>
+                ${i.whisper ? `<div class="whisper-snippet">"${truncate(i.whisper, 40)}"</div>` : ''}
+            </div>
+        </div>
+    `).join('');
+}
+
+function formatTime(t) {
+    if(!t) return 'now';
+    const d = t.toDate ? t.toDate() : new Date(t);
+    const diff = (Date.now() - d) / 1000;
+    if(diff < 60) return 'now';
+    if(diff < 3600) return `${Math.floor(diff/60)}m`;
+    if(diff < 86400) return `${Math.floor(diff/3600)}h`;
+    return `${Math.floor(diff/86400)}d`;
+}
+
+function truncate(s, l) {
+    if(!s) return '';
+    return s.length > l ? s.slice(0, l) + '...' : s;
+}
+</script>
+</body>
+</html>
