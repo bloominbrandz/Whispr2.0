@@ -21,15 +21,15 @@
     } catch (_) { return Promise.resolve(false); }
   };
   window.whisprBack = fallback => {
-    const fallbackUrl = new URL(fallback || "enter.html", location.href);
+    const fallbackUrl = new URL(fallback || "enter/index.html", location.href);
     const safeFallback = fallbackUrl.origin === location.origin
       ? fallbackUrl.href
-      : new URL("enter.html", location.href).href;
+      : new URL("enter/index.html", location.href).href;
     let cameFromThisApp = false;
     try {
       const previous = new URL(document.referrer);
       const previousPage = previous.pathname.split("/").pop().toLowerCase();
-      const authOrLandingPage = ["index.html", "login.html", "signup.html"].includes(previousPage);
+      const authOrLandingPage = ["index/index.html", "login/index.html", "signup/index.html"].includes(previousPage);
       const isCurrentPage = previous.pathname === location.pathname;
       cameFromThisApp = previous.origin === location.origin && !authOrLandingPage && !isCurrentPage;
     } catch (_) {}
