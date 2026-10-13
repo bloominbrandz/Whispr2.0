@@ -480,7 +480,7 @@ body{
                 <div class="profile-bio" id="bioDisplay">This whisperer keeps their secrets close...</div>
             </div>
             <div class="profile-right">
-                <button class="edit-btn" onclick="window.location.href='edit-profile.html'">Edit Profile</button>
+                <button class="edit-btn" onclick="window.location.href='edit-profile/index.html'">Edit Profile</button>
                 <div class="switch">
                     <span style="font-size:.9rem;">Hide whispers to others</span>
                     <label class="toggle-switch">
@@ -833,7 +833,7 @@ window.showFollowersModal = async function(type) {
 function addFollowerToList(list, uid, name) {
     const item = document.createElement('div');
     item.className = 'follower-item';
-    item.onclick = () => window.location.href = `other.html?uid=${uid}`;
+    item.onclick = () => window.location.href = `other/index.html?uid=${uid}`;
     item.innerHTML = `
         <div class="follower-avatar">${name.charAt(0).toUpperCase()}</div>
         <div class="follower-name">${escapeHtml(name)}</div>
@@ -852,7 +852,7 @@ document.getElementById('followersModal').addEventListener('click', (e) => {
 
 // Load user info & whispers
 onAuthStateChanged(auth, async (user)=>{
-    if(!user){ window.location.href="login.html"; return; }
+    if(!user){ window.location.href="login/index.html"; return; }
 
     const docRef = doc(db,"users",user.uid);
     const docSnap = await getDoc(docRef);
@@ -939,7 +939,7 @@ function escapeHtml(text) {
 }
 
 // Return button
-document.getElementById("returnBtn").addEventListener("click", () => window.whisprBack("enter.html"));
+document.getElementById("returnBtn").addEventListener("click", () => window.whisprBack("enter/index.html"));
 </script>
 <script src="theme.js" defer></script>
 </body>
