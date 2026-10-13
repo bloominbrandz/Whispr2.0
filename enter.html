@@ -1,325 +1,130 @@
-<!-- enter.html - Enhanced Mode Selection -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WHISPR | Choose Mode</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Shadows+Into+Light&family=Quicksand:wght@300;500&display=swap" rel="stylesheet">
-
-<style>
-* { box-sizing: border-box; }
-
-body, html {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    min-height: 100%;
-    background: #050200;
-    font-family: 'Shadows Into Light', cursive;
-    color: #ffca99;
-}
-
-body {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow-x: hidden;
-    overflow-y: auto;
-    padding: 100px 20px 90px;
-}
-
-/* Top nav strip - Unified with orange accents */
-#navStrip {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    display: flex;
-    gap: 10px;
-    z-index: 9999;
-}
-
-.nav-item {
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,69,0,0.3);
-    color: #ffca99;
-    padding: 5px 7px;
-    border-radius: 25px;
-    cursor: pointer;
-    font-size: 1rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-    backdrop-filter: blur(5px);
-}
-
-.nav-item:hover {
-    background: rgba(255,69,0,0.15);
-    border-color: #ff4500;
-    color: #fff;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(255,69,0,0.3);
-}
-
-/* Mode selection and logo */
-.splash-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 15px;
-    width: min(100%, 560px);
-    margin: auto;
-}
-
-.brand-link {
-    display: grid;
-    place-items: center;
-    width: 250px;
-    min-height: 190px;
-    margin-bottom: 4px;
-    border-radius: 24px;
-    text-decoration: none;
-    -webkit-tap-highlight-color: transparent;
-}
-
-.brand-link:focus-visible {
-    outline: 3px solid #91aa9b;
-    outline-offset: 3px;
-}
-
-.splash-container .brand-link img {
-    display: block;
-    width: 225px;
-    max-width: 100%;
-    height: auto;
-    filter: drop-shadow(0 10px 24px rgba(145, 170, 155, .3));
-    transition: transform .2s ease;
-}
-
-.brand-link:hover img { transform: scale(1.04); }
-
-.mode-card {
-    width: 100%;
-    padding: 18px 22px;
-    border: 1px solid rgba(181, 199, 187, .2);
-    border-radius: 18px;
-    background: rgba(255, 255, 255, .045);
-    text-align: center;
-}
-
-.mode-card h2 {
-    margin: 0 0 5px;
-    color: #a9c1b2;
-    font-size: 1.45rem;
-    letter-spacing: .04em;
-}
-
-.mode-card p {
-    margin: 0;
-    color: rgba(232, 235, 231, .78);
-    font: 400 .9rem/1.55 'Quicksand', sans-serif;
-}
-
-.privacy-note {
-    width: 100%;
-    margin: 0;
-    padding: 12px 16px;
-    border-left: 3px solid #91aa9b;
-    border-radius: 8px 14px 14px 8px;
-    background: rgba(145, 170, 155, .09);
-    color: rgba(232, 235, 231, .78);
-    font: 400 .78rem/1.5 'Quicksand', sans-serif;
-    text-align: left;
-}
-
-/* Unified button styling matching whisper theme */
-.go-btn {
-    background: #ff4500;
-    border: none;
-    color: #000;
-    padding: 8px 50px;
-    border-radius: 50px;
-    font-family: 'Shadows Into Light', cursive;
-    font-size: 1.3rem;
-    font-weight: bold;
-    cursor: pointer;
-    width: 220px;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 20px rgba(255,69,0,0.2);
-}
-
-.go-btn:hover {
-    background: #ff6347;
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(255,69,0,0.4);
-}
-
-.go-btn:active {
-    transform: translateY(0);
-}
-
-/* Logout button */
-.logout-btn {
-    position: fixed;
-    bottom: 30px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,69,0,0.3);
-    color: rgba(255,255,255,0.6);
-    padding: 8px 20px;
-    border-radius: 20px;
-    cursor: pointer;
-    font-family: 'Quicksand', sans-serif;
-    font-size: 0.8rem;
-    transition: all 0.3s ease;
-}
-
-.logout-btn:hover {
-    background: rgba(255,69,0,0.15);
-    border-color: #ff4500;
-    color: #ffca99;
-}
-
-/* User info display - Compact Version */
-.user-info {
-    position: fixed;
-    top: 25px; /* Reduced from 20px */
-    left: 12px; /* Reduced from 20px */
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 69, 0, 0.2); /* Thinner border */
-    color: #ffca99;
-    padding: 5px 10px; /* Slimmer padding */
-    border-radius: 12px; /* Sharper, cleaner corners */
-    font-family: 'Quicksand', sans-serif;
-    font-size: 0.7rem; /* Smaller text */
-    letter-spacing: 0.5px;
-    backdrop-filter: blur(3px); /* Lighter blur for performance */
-    z-index: 10000;
-}
-
-html[data-theme="light"] .mode-card {
-    background: rgba(255, 255, 255, .72);
-    border-color: rgba(75, 112, 91, .2);
-}
-
-html[data-theme="light"] .mode-card h2 { color: #426755; }
-html[data-theme="light"] .mode-card p,
-html[data-theme="light"] .privacy-note { color: #514d48; }
-html[data-theme="light"] .privacy-note { background: rgba(100, 133, 117, .1); }
-
-@media (max-width: 520px) {
-    body { padding: 82px 14px 84px; }
-    .splash-container { gap: 12px; }
-    .brand-link { width: 210px; min-height: 150px; }
-    .splash-container .brand-link img { width: 185px; }
-    .mode-card { padding: 15px 16px; }
-    .mode-card p { font-size: .84rem; }
-    .go-btn { width: min(100%, 260px); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .splash-container .brand-link img { transition: none; }
-}
-
-</style>
+<title>WHISPR | Home</title>
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="theme.css">
+<style>
+:root{--home-bg:#0b0c0e;--home-panel:#141619;--home-panel-soft:#191c20;--home-text:#f3f4f5;--home-muted:#a6abb2;--home-line:#30343a;--home-accent:#d7dadd}
+html[data-theme="light"]{--home-bg:#f1f2f3;--home-panel:#fff;--home-panel-soft:#f7f7f8;--home-text:#191b1e;--home-muted:#636970;--home-line:#d9dcdf;--home-accent:#222}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:var(--home-bg);color:var(--home-text);font-family:'Quicksand',sans-serif}
+body{min-height:100vh;min-height:100dvh;background:var(--home-bg)!important;background-image:none!important;padding:0 0 0 248px;overflow-x:hidden}
+/* The home navigation is the persistent social-style sidebar. */
+#navStrip{position:fixed;inset:0 auto 0 0;z-index:20;width:228px;display:flex;flex-direction:column;align-items:stretch;gap:7px;padding:18px 14px;border-right:1px solid var(--home-line);background:var(--home-panel)}
+.user-card{display:flex;flex-direction:column;align-items:flex-start;gap:12px;margin:0 0 20px;padding:5px 7px 20px;border-bottom:1px solid var(--home-line)}
+.avatar{width:52px;height:52px;display:grid;place-items:center;overflow:hidden;border:1px solid var(--home-line);border-radius:50%;background:var(--home-panel-soft);color:var(--home-text);font-size:1.1rem;font-weight:700}
+.avatar img{width:100%;height:100%;object-fit:cover}
+#userInfo{max-width:100%;overflow:hidden;color:var(--home-text);font-size:.92rem;font-weight:700;text-overflow:ellipsis;white-space:nowrap}
+.nav-item{width:100%;min-height:46px;display:flex;align-items:center;justify-content:flex-start;gap:14px;padding:0 12px;border:1px solid transparent;border-radius:12px;background:transparent;color:var(--home-muted);font:600 .9rem 'Quicksand',sans-serif;text-align:left;text-decoration:none;cursor:pointer;transition:background .18s ease,color .18s ease,border-color .18s ease}
+.nav-item svg{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.nav-item:hover,.nav-item:focus-visible{background:var(--home-panel-soft);border-color:var(--home-line);color:var(--home-text)}
+body:has(#navStrip) .theme-toggle{display:none!important}
+.home-main{width:min(100%,1050px);margin:0 auto;padding:30px clamp(20px,4vw,54px) 48px}
+.home-topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:32px;padding-bottom:17px;border-bottom:1px solid var(--home-line)}
+.brand{display:flex;align-items:center;gap:11px;color:var(--home-text);font-size:1.15rem;font-weight:700;letter-spacing:.12em;text-decoration:none}
+.brand-mark{width:34px;height:34px;display:grid;place-items:center;border:1px solid var(--home-line);border-radius:12px;background:var(--home-panel);font-size:.95rem;letter-spacing:0}
+.topbar-note{color:var(--home-muted);font-size:.82rem}
+.welcome{margin:0 0 7px;font-size:clamp(1.5rem,3vw,2rem);letter-spacing:-.03em}
+.subtitle{margin:0 0 26px;color:var(--home-muted);font-size:.95rem;line-height:1.6}
+.mode-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:stretch;gap:16px}
+.mode-card{display:flex;flex-direction:column;align-items:flex-start;min-height:254px;padding:23px;border:1px solid var(--home-line);border-radius:18px;background:var(--home-panel);text-align:left}
+.mode-kicker{margin:0 0 20px;color:var(--home-muted);font-size:.72rem;font-weight:700;letter-spacing:.13em;text-transform:uppercase}
+.mode-card h2{margin:0 0 9px;color:var(--home-text);font-size:1.3rem;letter-spacing:-.02em}
+.mode-card p{margin:0;color:var(--home-muted);font-size:.9rem;line-height:1.65}
+.mode-card .go-btn{margin-top:auto;padding:11px 18px;border:1px solid var(--home-text);border-radius:11px;background:var(--home-text)!important;color:var(--home-bg)!important;font:700 .9rem 'Quicksand',sans-serif;cursor:pointer;transition:transform .18s ease,opacity .18s ease}
+.mode-card .go-btn:hover{transform:translateY(-2px);opacity:.88}
+.privacy-note{margin:17px 0 0;padding:12px 14px;border:1px solid var(--home-line);border-radius:12px;background:var(--home-panel-soft);color:var(--home-muted);font-size:.79rem;line-height:1.55}
+.privacy-note strong{color:var(--home-text)}
+@media(max-width:720px){body{padding:0 0 76px}.home-main{padding:20px 18px 32px}#navStrip{inset:auto 0 0;width:100%;height:68px;flex-direction:row;justify-content:space-around;gap:3px;padding:7px 8px calc(7px + env(safe-area-inset-bottom));border-top:1px solid var(--home-line);border-right:0}.user-card{display:none}.nav-item{width:auto;min-width:0;min-height:46px;flex:1;flex-direction:column;justify-content:center;gap:3px;padding:5px 2px;border-radius:9px;font-size:.62rem}.nav-item svg{width:19px;height:19px}.home-topbar{margin-bottom:25px}.topbar-note{font-size:.72rem}}
+@media(max-width:540px){.mode-grid{grid-template-columns:1fr;gap:12px}.mode-card{min-height:220px;padding:19px}.mode-kicker{margin-bottom:14px}.home-main{padding-left:14px;padding-right:14px}.subtitle{margin-bottom:20px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important}}
+</style>
 </head>
 <body>
-
-<div class="user-info" id="userInfo">Loading...</div>
-
-<div id="navStrip">
-    <button class="nav-item" type="button" onclick="goToPage('search.html')" title="Search" aria-label="Search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"></circle><path d="m16 16 5 5"></path></svg></button>
-    <button class="nav-item" type="button" onclick="goToPage('notifications.html')" title="Notifications" aria-label="Notifications"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"></path></svg></button>
-    <button class="nav-item" type="button" onclick="goToPage('message.html')" title="Messages" aria-label="Messages"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v12H9l-5 4z"></path><path d="M8 10h8M8 13h5"></path></svg></button>
-    <button class="nav-item" type="button" onclick="goToPage('profile.html')" title="Profile" aria-label="Profile"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4 21a8 8 0 0 1 16 0"></path></svg></button>
-    
-</div>
-
-<div class="splash-container">
-    <a class="brand-link" href="enter.html" aria-label="WHISPR home" title="WHISPR home">
-        <img src="https://i.imgur.com/7vlpCCX.png" alt="WHISPR">
-    </a>
-
+<nav id="navStrip" aria-label="Main navigation">
+  <div class="user-card">
+    <div class="avatar" id="userAvatar" aria-hidden="true">W</div>
+    <div id="userInfo">Loading…</div>
+  </div>
+  <button class="nav-item" type="button" onclick="goToPage('search.html')" aria-label="Search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"></circle><path d="m16 16 5 5"></path></svg><span>Search</span></button>
+  <button class="nav-item" type="button" onclick="goToPage('notifications.html')" aria-label="Notifications"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"></path></svg><span>Activity</span></button>
+  <button class="nav-item" type="button" onclick="goToPage('message.html')" aria-label="Messages"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v12H9l-5 4z"></path><path d="M8 10h8M8 13h5"></path></svg><span>Messages</span></button>
+  <button class="nav-item" type="button" onclick="goToPage('profile.html')" aria-label="Profile"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4 21a8 8 0 0 1 16 0"></path></svg><span>Profile</span></button>
+  <button class="nav-item" type="button" onclick="goToPage('settings.html')" aria-label="Settings"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-1.7 2.9-.2-.1a1.7 1.7 0 0 0-1.8.1l-.2.1h-3.4l-.1-.2a1.7 1.7 0 0 0-1.5-1l-.2.1-2.9-1.7.1-.2a1.7 1.7 0 0 0-.1-1.8l-.1-.2v-3.4l.2-.1a1.7 1.7 0 0 0 1-1.5l-.1-.2 1.7-2.9.2.1a1.7 1.7 0 0 0 1.8-.1l.2-.1h3.4l.1.2a1.7 1.7 0 0 0 1.5 1l.2-.1 2.9 1.7-.1.2a1.7 1.7 0 0 0 .1 1.8l.1.2v3.4z"></path></svg><span>Settings</span></button>
+</nav>
+<main class="home-main">
+  <header class="home-topbar">
+    <a class="brand" href="enter.html" aria-label="WHISPR home"><span class="brand-mark" aria-hidden="true">W</span><span>WHISPR</span></a>
+    <span class="topbar-note">A quieter kind of social space</span>
+  </header>
+  <h1 class="welcome">Make room for what’s on your mind.</h1>
+  <p class="subtitle">Choose a quiet moment for yourself, or share a thought with the WHISPR community.</p>
+  <div class="mode-grid">
     <section class="mode-card" aria-labelledby="breatheTitle">
-        <h2 id="breatheTitle">Breathe</h2>
-        <p>A quiet space to slow down and let the thoughts you haven’t said out loud rise and pass. Take a breath, put feelings into words, and release them without needing to make them perfect.</p>
+      <p class="mode-kicker">Just for you</p>
+      <h2 id="breatheTitle">Breathe</h2>
+      <p>A quiet space to slow down and let the thoughts you haven’t said out loud rise and pass. Put feelings into words without needing to make them perfect.</p>
+      <p class="privacy-note"><strong>Privacy note:</strong> Breathe thoughts are not saved or encrypted. Please don’t include personal or sensitive information.</p>
+      <button class="go-btn" type="button" onclick="goToPage('breathe.html')">Start breathing</button>
     </section>
-    <p class="privacy-note"><strong>A note about privacy:</strong> Breathe thoughts are not saved or encrypted—they’re simply sent into the void. Please don’t include personal or sensitive information.</p>
-    <button class="go-btn" onclick="goToPage('breathe.html')">BREATHE</button>
-
     <section class="mode-card" aria-labelledby="whisperTitle">
-        <h2 id="whisperTitle">Whisper</h2>
-        <p>Send a random thought into a shared space. Passersby can catch it, read it, and leave a reaction or an echo of their own.</p>
+      <p class="mode-kicker">Open to everyone</p>
+      <h2 id="whisperTitle">Whisper</h2>
+      <p>Send a random thought into a shared space. Passersby can catch it, read it, and leave a reaction or an echo of their own.</p>
+      <button class="go-btn" type="button" onclick="goToPage('whisper.html')">Share a whisper</button>
     </section>
-    <button class="go-btn" onclick="goToPage('whisper.html')">WHISPER</button>
-</div>
-
-<button class="logout-btn" onclick="logout()">Logout</button>
-
-<!-- Firebase Modular SDK -->
+  </div>
+</main>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyBSmm2lC7iAMmQJqsG_jXi4DWpL7ghcJnc",
-    authDomain: "whispr-92fc0.firebaseapp.com",
-    projectId: "whispr-92fc0",
-    storageBucket: "whispr-92fc0.firebasestorage.app",
-    messagingSenderId: "133594748424",
-    appId: "1:133594748424:web:7dc7ff44e105d2d5cee3bd"
+  apiKey: "AIzaSyBSmm2lC7iAMmQJqsG_jXi4DWpL7ghcJnc",
+  authDomain: "whispr-92fc0.firebaseapp.com",
+  projectId: "whispr-92fc0",
+  storageBucket: "whispr-92fc0.firebasestorage.app",
+  messagingSenderId: "133594748424",
+  appId: "1:133594748424:web:7dc7ff44e105d2d5cee3bd"
 };
-
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// Make functions global
 window.goToPage = function(url) {
-    const user = auth.currentUser;
-    if(user) {
-        window.location.href = url;
-    } else {
-        alert("You must log in first.");
-        window.location.href = "login.html";
-    }
+  if (auth.currentUser) window.location.href = url;
+  else window.location.href = "login.html";
 };
 
-window.logout = async function() {
-    try {
-        await signOut(auth);
-        window.location.href = "login.html";
-    } catch(e) {
-        console.error("Logout error:", e);
-    }
-};
-
-// Auth state listener
 onAuthStateChanged(auth, async user => {
-    if(!user) {
-        window.location.href = "login.html";
-        return;
+  if (!user) {
+    window.location.href = "login.html";
+    return;
+  }
+  const info = document.getElementById("userInfo");
+  const avatar = document.getElementById("userAvatar");
+  let name = user.displayName || "Whisperer";
+  try {
+    const userDoc = await getDoc(doc(db, "users", user.uid));
+    if (userDoc.exists()) {
+      const data = userDoc.data();
+      name = data.username || data.displayName || name;
+      if (data.photoURL || data.photo) {
+        const image = document.createElement("img");
+        image.src = data.photoURL || data.photo;
+        image.alt = "";
+        avatar.replaceChildren(image);
+      }
     }
-    
-    // Get user info for display
-    try {
-        const userDoc = await getDoc(doc(db, "users", user.uid));
-        if(userDoc.exists()) {
-            const data = userDoc.data();
-            const username = data.username || data.displayName || user.displayName || "Whisperer";
-            document.getElementById('userInfo').textContent = `👤 ${username}`;
-        } else {
-            document.getElementById('userInfo').textContent = `👤 ${user.displayName || "Whisperer"}`;
-        }
-    } catch(e) {
-        document.getElementById('userInfo').textContent = `👤 ${user.displayName || "Whisperer"}`;
-    }
+  } catch (error) {
+    console.warn("Could not load profile details", error);
+  }
+  info.textContent = name;
+  if (!avatar.querySelector("img")) avatar.textContent = (name.trim()[0] || "W").toUpperCase();
 });
 </script>
 <script src="theme.js" defer></script>
