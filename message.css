@@ -28,6 +28,9 @@ button,a,input{font:inherit}
 a.chat-title:hover{text-decoration:underline;text-decoration-color:var(--accent);text-underline-offset:3px}
 .last-message{overflow:hidden;color:var(--muted);font-size:.83rem;text-overflow:ellipsis;white-space:nowrap}
 .unread{display:inline-grid;place-items:center;min-width:21px;height:21px;padding:0 6px;border-radius:99px;background:var(--accent);color:#182019;font-size:.7rem;font-weight:700}
+.delete-chat-btn{flex:0 0 auto;padding:8px 11px;border:1px solid var(--danger);border-radius:11px;background:transparent;color:var(--danger);font-size:.78rem;font-weight:600;cursor:pointer}
+.delete-chat-btn:hover{background:var(--surface-raised)}
+.delete-chat-btn:disabled{opacity:.5;cursor:wait}
 .empty-state{text-align:center;padding:52px 20px;border:1px dashed var(--line);border-radius:18px;color:var(--muted);line-height:1.6}
 .status-message,.form-status{min-height:1.2em;color:var(--danger);font-size:.85rem}
 .modal-backdrop{position:fixed;inset:0;z-index:10;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(0,0,0,.62);backdrop-filter:blur(5px)}
