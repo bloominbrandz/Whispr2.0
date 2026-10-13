@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Whispers | Echoes</title>
+<title>Notifications | WHISPR</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Shadows+Into+Light&family=Quicksand:wght@300;500&display=swap" rel="stylesheet">
 
@@ -220,12 +220,13 @@ body, html {
 }
 
 </style>
+<link rel="stylesheet" href="theme.css">
 </head>
 <body>
 
 <div class="header">
-    <button class="back-btn" onclick="window.location.href='enter.html'">← Back</button>
-    <div class="page-title">Your Echoes</div>
+    <button class="back-btn" onclick="window.whisprBack('enter.html')">← Back</button>
+    <div class="page-title">WHISPR · Your Echoes</div>
     <div style="width: 60px;"></div>
 </div>
 
@@ -277,6 +278,8 @@ import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/
 import { 
     getFirestore, 
     collection, 
+    doc,
+    getDoc,
     query, 
     where, 
     orderBy, 
@@ -327,15 +330,33 @@ async function loadActivity() {
     let reactCount = 0, commentCount = 0;
     
     for(const w of whispers) {
-        if(w.reactions) {
-            Object.entries(w.reactions).forEach(([uid, type]) => {
-                if(uid !== currentUser.uid) {
-                    reactCount++;
-                    const act = { type: 'reaction', icon: type, text: `Reacted ${type}`, time: w.timestamp, whisper: w.message, id: w.id };
-                    all.push(act); reactions.push(act);
+        const reactionUnsubscribe = onSnapshot(doc(db, "whispers", w.id), async whisperSnap => {
+            if (!whisperSnap.exists()) return;
+            const latest = whisperSnap.data();
+            const freshReactions = [];
+            for (const [uid, type] of Object.entries(latest.reactions || {})) {
+                if (uid === currentUser.uid || !type) continue;
+                let actor = "Someone";
+                try {
+                    const actorSnap = await getDoc(doc(db, "users", uid));
+                    if (actorSnap.exists()) {
+                        const profile = actorSnap.data();
+                        actor = profile.username || profile.displayName || actor;
+                    }
+                } catch (error) {
+                    console.warn("Could not load reaction profile", error);
                 }
-            });
-        }
+                const action = type === "❤️" ? "liked your whisper" : `reacted ${type} to your whisper`;
+                freshReactions.push({ type: 'reaction', icon: type, text: `${actor} ${action}`, time: latest.timestamp || w.timestamp, whisper: latest.message || w.message, id: w.id });
+            }
+            const keepOther = item => item.id !== w.id || item.type !== 'reaction';
+            all.splice(0, all.length, ...all.filter(keepOther), ...freshReactions);
+            reactions.splice(0, reactions.length, ...reactions.filter(keepOther), ...freshReactions);
+            reactCount = reactions.length;
+            document.getElementById('totalReactions').textContent = reactCount;
+            updateDisplay(all, reactions, comments, catches);
+        });
+        unsubscribers.push(reactionUnsubscribe);
         
         const unsub = onSnapshot(query(collection(db, "whispers", w.id, "comments"), orderBy("timestamp", "desc")), snap => {
             snap.docChanges().forEach(c => {
@@ -343,7 +364,9 @@ async function loadActivity() {
                     const d = c.data();
                     if(d.uid !== currentUser.uid) {
                         commentCount++;
-                        const act = { type: 'comment', icon: '💬', text: `<strong>${d.from}</strong>: ${truncate(d.text, 30)}`, time: d.timestamp, whisper: w.message, id: w.id };
+                        document.getElementById('totalComments').textContent = commentCount;
+                        const actor = d.from || "Someone";
+                        const act = { type: 'comment', icon: '💬', text: `${actor} commented: ${truncate(d.text, 50)}`, time: d.timestamp, whisper: w.message, id: w.id };
                         all.push(act); comments.push(act);
                         updateDisplay(all, reactions, comments, catches);
                     }
@@ -374,20 +397,46 @@ function updateDisplay(all, reactions, comments, catches) {
 
 function render(id, items) {
     const el = document.getElementById(id);
-    if(!items.length) {
-        el.innerHTML = '<div class="empty-state"><div class="empty-icon">🌙</div><div class="empty-text">The void is silent...</div></div>';
+    el.replaceChildren();
+    if (!items.length) {
+        const empty = document.createElement('div');
+        empty.className = 'empty-state';
+        empty.innerHTML = '<div class="empty-icon">🌙</div><div class="empty-text">The void is silent...</div>';
+        el.appendChild(empty);
         return;
     }
-    el.innerHTML = items.map(i => `
-        <div class="activity-card" onclick="location.href='whisper.html#${i.id}'">
-            <span class="activity-icon">${i.icon}</span>
-            <div class="activity-main">
-                <div class="activity-text">${i.text}</div>
-                <div class="activity-meta">${formatTime(i.time)}</div>
-                ${i.whisper ? `<div class="whisper-snippet">"${truncate(i.whisper, 40)}"</div>` : ''}
-            </div>
-        </div>
-    `).join('');
+    items.forEach(item => {
+        const card = document.createElement('article');
+        card.className = 'activity-card';
+        card.tabIndex = 0;
+        card.setAttribute('role', 'link');
+        const openWhisper = () => { window.location.href = `whisper.html#${encodeURIComponent(item.id)}`; };
+        card.addEventListener('click', openWhisper);
+        card.addEventListener('keydown', event => {
+            if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openWhisper(); }
+        });
+
+        const icon = document.createElement('span');
+        icon.className = 'activity-icon';
+        icon.textContent = item.icon || '✨';
+        const main = document.createElement('div');
+        main.className = 'activity-main';
+        const text = document.createElement('div');
+        text.className = 'activity-text';
+        text.textContent = item.text || 'New activity';
+        const meta = document.createElement('div');
+        meta.className = 'activity-meta';
+        meta.textContent = formatTime(item.time);
+        main.append(text, meta);
+        if (item.whisper) {
+            const snippet = document.createElement('div');
+            snippet.className = 'whisper-snippet';
+            snippet.textContent = `“${truncate(item.whisper, 60)}”`;
+            main.appendChild(snippet);
+        }
+        card.append(icon, main);
+        el.appendChild(card);
+    });
 }
 
 function formatTime(t) {
@@ -405,5 +454,6 @@ function truncate(s, l) {
     return s.length > l ? s.slice(0, l) + '...' : s;
 }
 </script>
+<script src="theme.js" defer></script>
 </body>
 </html>
