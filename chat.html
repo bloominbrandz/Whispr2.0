@@ -20,9 +20,9 @@
 </header>
 <main class="chat-shell">
   <div class="notice" id="notice" role="status"></div>
-  <section class="messages" id="messages" aria-live="polite"><div class="empty-state">Loading messages…</div></section>
-  <form class="send-box" id="sendForm">
-    <input id="msgInput" maxlength="4000" autocomplete="off" placeholder="Write a message…" aria-label="Message" required>
+  <section class="messages" id="messages" aria-live="polite" aria-label="Conversation messages"><div class="empty-state">Loading messages…</div></section>
+  <form class="send-box" id="sendForm" aria-label="Send a message">
+    <input type="text" id="msgInput" maxlength="4000" autocomplete="off" placeholder="Write a message…" aria-label="Message" required>
     <button class="send-btn" id="sendBtn" type="submit">Send</button>
   </form>
 </main>
