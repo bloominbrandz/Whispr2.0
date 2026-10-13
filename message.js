@@ -1,5 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { searchUsers, userDisplayName, userAvatar } from "./user-search.js";
 import { getFirestore, collection, doc, getDoc, setDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -17,10 +18,15 @@ const db = getFirestore(app);
 const results = document.getElementById("results");
 const searchInput = document.getElementById("searchInput");
 const statusMessage = document.getElementById("statusMessage");
+const peopleSection = document.getElementById("peopleSection");
+const peopleResults = document.getElementById("peopleResults");
+const conversationHeading = document.getElementById("conversationHeading");
 const groupModal = document.getElementById("groupModal");
 let activeUser = null;
 let cachedChats = [];
 let stopChats = null;
+let peopleSearchTimer = null;
+let peopleSearchToken = 0;
 
 function makeChatItem(chat) {
   const item = document.createElement("article");
@@ -77,8 +83,38 @@ function makeChatItem(chat) {
   avatarImage.addEventListener("error", () => { avatarImage.hidden = true; });
   return item;
 }
+function makePersonItem(person) {
+  const name = userDisplayName(person);
+  const item = document.createElement("a");
+  item.className = "chat-item";
+  item.href = `chat.html?uid=${encodeURIComponent(person.uid)}&name=${encodeURIComponent(name)}`;
+  const avatar = document.createElement("span");
+  avatar.className = "avatar-link";
+  avatar.textContent = name.charAt(0).toUpperCase();
+  const avatarUrl = userAvatar(person);
+  if (avatarUrl) {
+    const image = document.createElement("img");
+    image.className = "avatar";
+    image.alt = "";
+    image.src = avatarUrl;
+    image.onerror = () => image.remove();
+    avatar.appendChild(image);
+  }
+  const info = document.createElement("span");
+  info.className = "chat-info";
+  const title = document.createElement("span");
+  title.className = "chat-title";
+  title.textContent = name;
+  const detail = document.createElement("span");
+  detail.className = "last-message";
+  detail.textContent = person.username ? `@${person.username} · Start a conversation` : "Start a conversation";
+  info.append(title, detail);
+  item.append(avatar, info);
+  return item;
+}
 function renderChats() {
   const filter = searchInput.value.trim().toLowerCase();
+  conversationHeading.textContent = filter ? "Matching conversations" : "Conversations";
   results.replaceChildren();
   const visible = cachedChats.filter(chat => `${chat.groupName || ""} ${chat.otherUsername || ""} ${chat.lastMessageText || ""}`.toLowerCase().includes(filter));
   if (!visible.length) {
@@ -122,7 +158,41 @@ onAuthStateChanged(auth, user => {
   });
 });
 
-searchInput.addEventListener("input", renderChats);
+function searchPeople(term) {
+  const token = ++peopleSearchToken;
+  clearTimeout(peopleSearchTimer);
+  if (!term) {
+    peopleSection.hidden = true;
+    peopleResults.replaceChildren();
+    return;
+  }
+  peopleSection.hidden = false;
+  peopleResults.innerHTML = '<div class="empty-state">Searching people by username or email…</div>';
+  peopleSearchTimer = setTimeout(async () => {
+    if (!activeUser) return;
+    try {
+      const people = await searchUsers(db, term, activeUser.uid);
+      if (token !== peopleSearchToken) return;
+      peopleResults.replaceChildren();
+      if (!people.length) {
+        const empty = document.createElement("div");
+        empty.className = "empty-state";
+        empty.textContent = "No people found for that username or email.";
+        peopleResults.appendChild(empty);
+        return;
+      }
+      people.forEach(person => peopleResults.appendChild(makePersonItem(person)));
+    } catch (error) {
+      if (token !== peopleSearchToken) return;
+      console.warn("People search failed", error);
+      peopleResults.innerHTML = '<div class="empty-state">People search is unavailable right now.</div>';
+    }
+  }, 250);
+}
+searchInput.addEventListener("input", () => {
+  renderChats();
+  searchPeople(searchInput.value.trim());
+});
 document.getElementById("backBtn").addEventListener("click", () => window.whisprBack("enter.html"));
 document.getElementById("groupBtn").addEventListener("click", () => {
   groupModal.hidden = false;
