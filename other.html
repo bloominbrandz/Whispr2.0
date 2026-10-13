@@ -223,7 +223,7 @@ function getUserReaction(reactions, userId) {
 // Toggle reaction - ONE PER USER
 async function toggleReaction(whisperId, reactionType) {
     if (!currentUser) {
-        alert('Please log in to react');
+        window.whisprNotify("Sign in required", "Please log in to react.");
         return;
     }
 
@@ -253,7 +253,7 @@ window.toggleReaction = toggleReaction;
 // Submit comment
 async function submitComment(whisperId) {
     if (!currentUser) {
-        alert('Please log in to comment');
+        window.whisprNotify("Sign in required", "Please log in to comment.");
         return;
     }
 
@@ -279,7 +279,7 @@ async function submitComment(whisperId) {
         input.value = '';
     } catch (e) {
         console.error("Comment error:", e);
-        alert('Failed to add comment');
+        window.whisprNotify("Comment not sent", "Please try again.");
     } finally {
         btn.disabled = false;
     }
@@ -645,7 +645,7 @@ async function loadUserWhispers(uid) {
 // Toggle follow - LIVE UPDATE
 window.toggleFollow = async function() {
     if (!currentUser) {
-        alert('Please log in to follow');
+        window.whisprNotify("Sign in required", "Please log in to follow.");
         return;
     }
 
