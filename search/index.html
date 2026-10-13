@@ -35,7 +35,7 @@ html[data-theme="light"] .searchBox button{color:#fff}
 </head>
 <body>
 <header class="header">
-  <button class="backBtn" type="button" onclick="window.whisprBack('enter.html')">← Back</button>
+  <button class="backBtn" type="button" onclick="window.whisprBack('enter/index.html')">← Back</button>
   <h1>WHISPR · Search</h1>
   <span aria-hidden="true"></span>
 </header>
@@ -85,14 +85,14 @@ let suggestionTimer;
 let suggestionRequest = 0;
 
 onAuthStateChanged(auth, user => {
-  if (!user) { window.location.href = "login.html"; return; }
+  if (!user) { window.location.href = "login/index.html"; return; }
   currentUser = user;
 });
 
 function makeUserItem(user) {
   const item = document.createElement("a");
   item.className = "userItem";
-  item.href = `chat.html?uid=${encodeURIComponent(user.uid)}&name=${encodeURIComponent(userDisplayName(user))}`;
+  item.href = `chat/index.html?uid=${encodeURIComponent(user.uid)}&name=${encodeURIComponent(userDisplayName(user))}`;
   const avatar = document.createElement("span");
   avatar.className = "avatar";
   avatar.textContent = userDisplayName(user).charAt(0).toUpperCase();
