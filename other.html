@@ -185,6 +185,26 @@ function getUidFromUrl() {
     return params.get('uid');
 }
 
+async function getProfileData(uid) {
+    // Prefer a safe, searchable profile record when the project has migrated to it.
+    try {
+        const publicProfile = await getDoc(doc(db, "publicProfiles", uid));
+        if (publicProfile.exists()) return publicProfile.data();
+    } catch (error) {
+        console.warn("Could not read publicProfiles; checking legacy profile access.", error);
+    }
+
+    // Backward compatibility for projects whose rules still allow reading /users.
+    try {
+        const legacyProfile = await getDoc(doc(db, "users", uid));
+        if (legacyProfile.exists()) return legacyProfile.data();
+    } catch (error) {
+        console.warn("Legacy profile is not readable; create a publicProfiles record.", error);
+    }
+
+    return null;
+}
+
 // Count reactions
 function countReactions(reactions) {
     if (!reactions) return { "❤️": 0, "🔥": 0, "✨": 0, "🌙": 0 };
@@ -389,17 +409,18 @@ function setupWhisperListener(whisperId, currentUserId) {
 function setupFollowersListener(userId) {
     if (followUnsubscribe) followUnsubscribe();
 
-    const userRef = doc(db, "users", userId);
-    followUnsubscribe = onSnapshot(userRef, (docSnap) => {
+    const profileRef = doc(db, "publicProfiles", userId);
+    followUnsubscribe = onSnapshot(profileRef, (docSnap) => {
         if (!docSnap.exists()) return;
         const data = docSnap.data();
-        
-        // Count followers (users who have this user in their following list)
+
+        // This count is optional and may be unavailable when private user records are restricted.
         updateFollowersCount(userId);
-        
-        // Count following
-        const following = data.following || [];
+
+        const following = Array.isArray(data.following) ? data.following : [];
         document.getElementById('statFollowing').textContent = following.length;
+    }, (error) => {
+        console.warn("Public profile stats listener unavailable:", error);
     });
 }
 
@@ -484,19 +505,22 @@ window.closeFollowersModal = function() {
 // Load profile
 async function loadProfile() {
     profileUserId = getUidFromUrl();
+    if (!currentUser) {
+        document.getElementById('profileCard').innerHTML = '<div class="empty-state"><div class="empty-icon">🔒</div><div class="empty-text">Please sign in to view profiles.</div></div>';
+        return;
+    }
     if (!profileUserId) {
         document.getElementById('profileCard').innerHTML = '<div class="empty-state"><div class="empty-icon">🌙</div><div class="empty-text">No user specified</div></div>';
         return;
     }
 
     try {
-        const userDoc = await getDoc(doc(db, "users", profileUserId));
-        if (!userDoc.exists()) {
-            document.getElementById('profileCard').innerHTML = '<div class="empty-state"><div class="empty-icon">🌙</div><div class="empty-text">This whisperer has vanished into the void...</div></div>';
+        profileUserData = await getProfileData(profileUserId);
+        if (!profileUserData) {
+            document.getElementById('profileCard').innerHTML = '<div class="empty-state"><div class="empty-icon">🌙</div><div class="empty-text">Profile unavailable. This account may be deleted, or its public profile has not been created yet.</div></div>';
+            document.getElementById('whisperList').innerHTML = '<div class="empty-state"><div class="empty-text">No public profile to show.</div></div>';
             return;
         }
-
-        profileUserData = userDoc.data();
         const displayName = profileUserData.username || profileUserData.displayName || 'Anonymous';
         const bio = profileUserData.bio || 'This whisperer keeps their secrets close...';
         isOwnProfile = currentUser && currentUser.uid === profileUserId;
@@ -505,7 +529,9 @@ async function loadProfile() {
         let isFollowing = false;
         if (currentUser) {
             const currentUserDoc = await getDoc(doc(db, "users", currentUser.uid));
-            const following = currentUserDoc.data().following || [];
+            const following = currentUserDoc.exists() && Array.isArray(currentUserDoc.data().following)
+                ? currentUserDoc.data().following
+                : [];
             isFollowing = following.includes(profileUserId);
         }
 
