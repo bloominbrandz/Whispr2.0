@@ -3,135 +3,39 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Chat | Whispers</title>
-<link href="https://fonts.googleapis.com/css2?family=Shadows+Into+Light&display=swap" rel="stylesheet">
-<style>
-body{background:#050200;color:white;font-family:'Shadows Into Light',cursive;margin:0;display:flex;flex-direction:column;height:100vh;}
-.header{padding:15px;border-bottom:1px solid rgba(255,69,0,0.2);display:flex;align-items:center;gap:10px;}
-#chatName{cursor:pointer;transition:all 0.3s;color:#ffaa00;}
-#chatName:hover{color:#ff4500;text-decoration:underline;}
-.messages{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:10px;}
-.msg{padding:10px 14px;border-radius:15px;max-width:70%;}
-.sent{align-self:flex-end;background:#ff4500;}
-.received{align-self:flex-start;background:rgba(255,255,255,0.1);}
-.sendBox{display:flex;padding:10px;gap:10px;border-top:1px solid rgba(255,69,0,0.2);}
-input{flex:1;padding:10px;border-radius:20px;border:none;background:rgba(255,255,255,0.1);color:white;}
-button{padding:10px 20px;border-radius:20px;border:none;background:#ff4500;color:white;cursor:pointer;}
-</style>
+<title>Chat | WHISPR</title>
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="chat.css">
+<link rel="stylesheet" href="theme.css">
 </head>
 <body>
-
-<div class="header">
-<button onclick="window.location.href='message.html'">← Back</button>
-<h3 id="chatName" onclick="goToProfile()">Chat</h3>
+<header class="header">
+  <a class="back-btn" href="message.html">← <span>Messages</span></a>
+  <a class="brand" href="enter.html" aria-label="WHISPR home"><img src="https://i.imgur.com/7vlpCCX.png" alt="WHISPR logo"><span>WHISPR</span></a>
+  <a class="identity" id="profileIdentity" aria-label="Visit profile">
+    <span class="profile-avatar"><span id="profileInitial">?</span><img id="profileAvatar" alt="" hidden></span>
+    <span class="identity-text"><strong id="chatName">Chat</strong><span id="chatSubtitle">Private conversation</span></span>
+  </a>
+  <div class="actions" id="chatActions"><button id="callBtn" class="action-btn" type="button" hidden>☎ <span>Voice call</span></button><button id="blockBtn" class="action-btn danger" type="button" hidden>Block</button></div>
+</header>
+<main class="chat-shell">
+  <div class="notice" id="notice" role="status"></div>
+  <section class="messages" id="messages" aria-live="polite"><div class="empty-state">Loading messages…</div></section>
+  <form class="send-box" id="sendForm">
+    <input id="msgInput" maxlength="4000" autocomplete="off" placeholder="Write a message…" aria-label="Message" required>
+    <button class="send-btn" id="sendBtn" type="submit">Send</button>
+  </form>
+</main>
+<div class="call-overlay" id="callOverlay" hidden>
+  <div class="call-card">
+    <div class="call-icon">☎</div>
+    <h2 id="callTitle">Voice call</h2>
+    <p id="callStatus">Connecting…</p>
+    <div class="call-controls"><button id="acceptCallBtn" class="send-btn" type="button" hidden>Answer</button><button id="endCallBtn" class="action-btn danger" type="button">End call</button></div>
+  </div>
 </div>
-
-<div class="messages" id="messages"></div>
-
-<div class="sendBox">
-<input id="msgInput" placeholder="Type message...">
-<button id="sendBtn">Send</button>
-</div>
-
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, collection, doc, addDoc, query, orderBy, onSnapshot, serverTimestamp, setDoc, increment } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyBSmm2lC7iAMmQJqsG_jXi4DWpL7ghcJnc",
-  authDomain: "whispr-92fc0.firebaseapp.com",
-  projectId: "whispr-92fc0",
-  storageBucket: "whispr-92fc0.firebasestorage.app",
-  messagingSenderId: "133594748424",
-  appId: "1:133594748424:web:7dc7ff44e105d2d5cee3bd",
-  measurementId: "G-P7RG5XGGB1"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-
-const urlParams = new URLSearchParams(window.location.search);
-const otherUid = urlParams.get("uid");
-const otherName = decodeURIComponent(urlParams.get("name") || "User");
-document.getElementById("chatName").textContent = otherName;
-
-let currentUser;
-let conversationId;
-
-function getConversationId(a,b){ return [a,b].sort().join("_"); }
-
-// Go to other user's profile
-window.goToProfile = function() {
-  if (otherUid) {
-    window.location.href = `other.html?uid=${otherUid}`;
-  }
-};
-
-onAuthStateChanged(auth, (user) => {
-  if(!user){ window.location.href="login.html"; return; }
-  currentUser = user;
-  conversationId = getConversationId(user.uid, otherUid);
-  loadMessages();
-});
-
-function loadMessages(){
-  const q = query(collection(db,"messages",conversationId,"chat"), orderBy("time"));
-  onSnapshot(q,(snapshot)=>{
-    const messagesDiv = document.getElementById("messages");
-    messagesDiv.innerHTML="";
-    snapshot.forEach(docSnap=>{
-      const msg = docSnap.data();
-      const div = document.createElement("div");
-      div.className = "msg " + (msg.senderId===currentUser.uid?"sent":"received");
-      div.textContent = msg.text;
-      messagesDiv.appendChild(div);
-    });
-    messagesDiv.scrollTop = messagesDiv.scrollHeight;
-  });
-}
-
-document.getElementById("sendBtn").onclick = sendMessage;
-document.getElementById("msgInput").addEventListener("keypress",(e)=>{ if(e.key==="Enter") sendMessage(); });
-
-async function sendMessage(){
-  const input = document.getElementById("msgInput");
-  const text = input.value.trim();
-  if(!text || !currentUser) return;
-
-  // 1. Add message
-  const msgRef = await addDoc(collection(db,"messages",conversationId,"chat"),{
-    text:text,
-    senderId:currentUser.uid,
-    time:serverTimestamp()
-  });
-
-  // 2. Update userChats for both users
-  const chatDataCurrent = {
-    conversationId: conversationId,
-    otherUserId: otherUid,
-    otherUsername: otherName,
-    lastMessageText: text,
-    lastMessageTime: serverTimestamp(),
-    unreadCount: 0
-  };
-
-  const chatDataOther = {
-    conversationId: conversationId,
-    otherUserId: currentUser.uid,
-    otherUsername: currentUser.displayName || currentUser.email,
-    lastMessageText: text,
-    lastMessageTime: serverTimestamp(),
-    unreadCount: increment(1)
-  };
-
-  await setDoc(doc(db,"userChats",currentUser.uid), { [conversationId]: chatDataCurrent }, { merge:true });
-  await setDoc(doc(db,"userChats",otherUid), { [conversationId]: chatDataOther }, { merge:true });
-
-  input.value="";
-}
-</script>
-
+<audio id="remoteAudio" autoplay playsinline></audio>
+<script type="module" src="chat.js"></script>
+<script src="theme.js" defer></script>
 </body>
 </html>
