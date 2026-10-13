@@ -1,4 +1,4 @@
-<!-- notifications.html - Compact Single Screen -->
+<!-- notifications/index.html - Compact Single Screen -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -225,7 +225,7 @@ body, html {
 <body>
 
 <div class="header">
-    <button class="back-btn" onclick="window.whisprBack('enter.html')">← Back</button>
+    <button class="back-btn" onclick="window.whisprBack('enter/index.html')">← Back</button>
     <div class="page-title">WHISPR · Your Echoes</div>
     <div style="width: 60px;"></div>
 </div>
@@ -344,7 +344,7 @@ window.showTab = function(tabName, btn) {
 };
 
 onAuthStateChanged(auth, async user => {
-    if(!user) { window.location.href = "login.html"; return; }
+    if(!user) { window.location.href = "login/index.html"; return; }
     currentUser = user;
     await loadActivity();
 });
@@ -385,7 +385,7 @@ async function loadActivity() {
                 const action = type === "❤️" ? "liked your whisper" : `reacted ${type} to your whisper`;
                 freshReactions.push({ type: 'reaction', icon: type, text: `${actor} ${action}`, time: latest.timestamp || w.timestamp, whisper: latest.message || w.message, id: w.id });
                 if (oldReactions && oldReactions[uid] !== type) {
-                    window.whisprNotify?.("New reaction", `${actor} ${action}.`, { tag: `reaction-${w.id}-${uid}`, url: `whisper.html#${encodeURIComponent(w.id)}` });
+                    window.whisprNotify?.("New reaction", `${actor} ${action}.`, { tag: `reaction-${w.id}-${uid}`, url: `whisper/index.html#${encodeURIComponent(w.id)}` });
                 }
             }
             const keepOther = item => item.id !== w.id || item.type !== 'reaction';
@@ -411,7 +411,7 @@ async function loadActivity() {
                         const act = { type: 'comment', icon: '💬', text: `${actor} commented: ${truncate(d.text, 50)}`, time: d.timestamp, whisper: w.message, id: w.id };
                         all.push(act); comments.push(act);
                         if (!isInitialSnapshot) {
-                            window.whisprNotify?.("New comment", `${actor} commented on your whisper.`, { tag: `comment-${c.doc.id}`, url: `whisper.html#${encodeURIComponent(w.id)}` });
+                            window.whisprNotify?.("New comment", `${actor} commented on your whisper.`, { tag: `comment-${c.doc.id}`, url: `whisper/index.html#${encodeURIComponent(w.id)}` });
                         }
                         updateDisplay(all, reactions, comments, catches);
                     }
@@ -455,7 +455,7 @@ function render(id, items) {
         card.className = 'activity-card';
         card.tabIndex = 0;
         card.setAttribute('role', 'link');
-        const openWhisper = () => { window.location.href = `whisper.html#${encodeURIComponent(item.id)}`; };
+        const openWhisper = () => { window.location.href = `whisper/index.html#${encodeURIComponent(item.id)}`; };
         card.addEventListener('click', openWhisper);
         card.addEventListener('keydown', event => {
             if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openWhisper(); }
