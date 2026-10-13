@@ -290,6 +290,7 @@ const db = getFirestore(app);
 
 let currentUserData = null;
 let activeMode = 'breathe';
+let isReleasing = false;
 
 // DOM Elements
 const backBtn = document.getElementById('backBtn');
@@ -351,6 +352,8 @@ function startBreathingCycle() {
 
 // Release breath to Firestore (instead of Google Sheets)
 async function releaseRant() {
+    if (isReleasing) return;
+
     const d = voidDear.value.trim();
     const m = voidMessage.value.trim();
     const f = voidFrom.value.trim();
@@ -366,6 +369,7 @@ async function releaseRant() {
         return;
     }
     
+    isReleasing = true;
     releaseBtn.disabled = true;
     showMessage("Releasing to void...", false);
     
@@ -383,67 +387,72 @@ async function releaseRant() {
         const docRef = await addDoc(collection(db, "breaths"), breathData);
         console.log('Breath saved with ID:', docRef.id);
         
-        // Visual feedback
         rantContainer.style.opacity = '0';
         rantContainer.style.pointerEvents = 'none';
-        
-        // Show success popup
         popupOverlay.style.display = 'flex';
-        
-        // Animate words floating away
-        animateWords(m, () => {
-            setTimeout(() => {
-                // Reset form
-                voidDear.value = '';
-                voidMessage.value = '';
-                // Restore username
-                const username = currentUserData?.username || user.displayName || "Anonymous";
-                voidFrom.value = username;
-                
-                rantContainer.style.opacity = '1';
-                rantContainer.style.pointerEvents = 'auto';
-                releaseBtn.disabled = false;
-                showMessage("", false);
-                
-                // Hide popup after delay
-                setTimeout(() => {
-                    popupOverlay.style.display = 'none';
-                }, 2000);
-            }, 2000);
-        });
-        
+
+        await animateWords(m);
+        await new Promise(resolve => setTimeout(resolve, 2000));
+
+        voidDear.value = '';
+        voidMessage.value = '';
+        voidFrom.value = currentUserData?.username || user.displayName || "Anonymous";
+        popupOverlay.style.display = 'none';
+        showMessage("", false);
     } catch(e) {
         console.error('Error saving breath:', e);
+        popupOverlay.style.display = 'none';
         showMessage("Failed to release: " + e.message);
+    } finally {
+        rantContainer.style.opacity = '1';
+        rantContainer.style.pointerEvents = 'auto';
         releaseBtn.disabled = false;
+        isReleasing = false;
     }
 }
 
-// Animate words floating away
-function animateWords(msg, callback) {
-    const words = msg.split(' '); 
-    let completed = 0;
-    words.forEach((w, i) => {
-        setTimeout(() => {
-            const el = document.createElement('div'); 
-            el.className = 'word-soul';
-            el.innerText = w; 
-            el.style.left = '50%'; 
-            el.style.top = '50%'; 
-            document.body.appendChild(el);
-            
-            const anim = el.animate([
-                { opacity: 0, transform: 'translate(-50%,-50%) scale(0.9)' },
-                { opacity: 1, offset: 0.15 },
-                { opacity: 0, transform: `translate(${(Math.random()-0.5)*250}px,-250px) scale(0.6)` }
-            ], { duration: 5500, easing: 'ease-out' });
-            
-            anim.onfinish = () => { 
-                el.remove(); 
-                completed++; 
-                if(completed === words.length && callback) callback(); 
-            };
-        }, i * 280);
+// Resolve even if there are no words or an animation cannot start.
+function animateWords(message) {
+    const words = message.trim().split(/\s+/).filter(Boolean).slice(0, 24);
+    if (!words.length) return Promise.resolve();
+
+    return new Promise(resolve => {
+        let completed = 0;
+        const finishedElements = new WeakSet();
+        const finishWord = (element, timer) => {
+            if (finishedElements.has(element)) return;
+            finishedElements.add(element);
+            clearTimeout(timer);
+            element.remove();
+            completed++;
+            if (completed === words.length) resolve();
+        };
+
+        words.forEach((word, index) => {
+            setTimeout(() => {
+                const element = document.createElement('div');
+                element.className = 'word-soul';
+                element.textContent = word;
+                element.style.left = '50%';
+                element.style.top = '50%';
+                document.body.appendChild(element);
+
+                let timer;
+                try {
+                    const animation = element.animate([
+                        { opacity: 0, transform: 'translate(-50%,-50%) scale(0.9)' },
+                        { opacity: 1, offset: 0.15 },
+                        { opacity: 0, transform: `translate(${(Math.random() - 0.5) * 250}px,-250px) scale(0.6)` }
+                    ], { duration: 5500, easing: 'ease-out' });
+                    timer = setTimeout(() => finishWord(element, timer), 6000);
+                    animation.onfinish = () => finishWord(element, timer);
+                    animation.oncancel = () => finishWord(element, timer);
+                } catch (error) {
+                    console.warn('Word animation unavailable', error);
+                    finishWord(element, timer);
+                }
+            }, index * 280);
+        });
     });
 }
 
