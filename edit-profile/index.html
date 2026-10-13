@@ -263,7 +263,7 @@ button:disabled{
         <button class="delete-btn" onclick="showDeleteModal()">Delete Account</button>
     </div>
 
-    <div class="back" onclick="window.location.href='profile.html'">← Back to Profile</div>
+    <div class="back" onclick="window.location.href='profile.'">← Back to Profile</div>
 </div>
 
 <script type="module">
@@ -311,7 +311,7 @@ onAuthStateChanged(auth, async user => {
             document.getElementById("usernameInput").value = user.displayName || '';
         }
     } else {
-        window.location.href = "login.html";
+        window.location.href = "login/index.html";
     }
 });
 
@@ -408,7 +408,7 @@ async function confirmDeleteAccount() {
         
         showAlert("Account deleted");
         setTimeout(() => {
-            window.location.href = "login.html";
+            window.location.href = "login/index.html";
         }, 1500);
         
     } catch(err) {
