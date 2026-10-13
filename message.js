@@ -1,504 +1,315 @@
-<!-- notifications.html - Compact Single Screen -->
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Notifications | WHISPR</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Shadows+Into+Light&family=Quicksand:wght@300;500&display=swap" rel="stylesheet">
-
-<style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-
-body, html {
-    width: 100%;
-    height: 100vh;
-    background: #050200;
-    font-family: 'Shadows Into Light', cursive;
-    color: #ffca99;
-    overflow: hidden;
-}
-
-/* Compact Header */
-.header {
-    height: 50px;
-    background: rgba(5, 2, 0, 0.95);
-    border-bottom: 1px solid rgba(255, 69, 0, 0.3);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 15px;
-    flex-shrink: 0;
-}
-
-.back-btn {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 69, 0, 0.3);
-    color: #ffca99;
-    padding: 6px 15px;
-    border-radius: 20px;
-    cursor: pointer;
-    font-family: 'Quicksand', sans-serif;
-    font-size: 0.8rem;
-    transition: all 0.3s;
-}
-
-.back-btn:hover {
-    background: rgba(255, 69, 0, 0.15);
-    border-color: #ff4500;
-}
-
-.page-title {
-    font-size: 1.2rem;
-    color: #ff4500;
-}
-
-/* Compact Stats Row */
-.stats-row {
-    display: flex;
-    gap: 10px;
-    padding: 10px 15px;
-    border-bottom: 1px solid rgba(255, 69, 0, 0.2);
-}
-
-.stat-item {
-    flex: 1;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 69, 0, 0.3);
-    border-radius: 10px;
-    padding: 8px;
-    text-align: center;
-}
-
-.stat-num {
-    font-size: 1.3rem;
-    color: #ff4500;
-    font-weight: bold;
-    display: block;
-}
-
-.stat-label {
-    font-family: 'Quicksand', sans-serif;
-    font-size: 0.65rem;
-    color: rgba(255, 255, 255, 0.5);
-}
-
-/* Compact Tabs */
-.tabs {
-    display: flex;
-    padding: 0 15px;
-    border-bottom: 1px solid rgba(255, 69, 0, 0.2);
-    gap: 5px;
-}
-
-.tab {
-    flex: 1;
-    background: transparent;
-    border: none;
-    color: rgba(255, 255, 255, 0.5);
-    padding: 8px 5px;
-    cursor: pointer;
-    font-family: 'Quicksand', sans-serif;
-    font-size: 0.75rem;
-    border-bottom: 2px solid transparent;
-    margin-bottom: -1px;
-    transition: all 0.3s;
-}
-
-.tab.active {
-    color: #ff4500;
-    border-bottom-color: #ff4500;
-}
-
-/* Scrollable Activity Area */
-.activity-container {
-    flex: 1;
-    overflow-y: auto;
-    padding: 10px 15px;
-}
-
-.activity-container::-webkit-scrollbar {
-    width: 6px;
-}
-
-.activity-container::-webkit-scrollbar-thumb {
-    background: rgba(255, 69, 0, 0.5);
-    border-radius: 3px;
-}
-
-/* Compact Activity Cards */
-.activity-card {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 69, 0, 0.2);
-    border-radius: 10px;
-    padding: 10px 12px;
-    margin-bottom: 8px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    transition: all 0.3s;
-    cursor: pointer;
-}
-
-.activity-card:hover {
-    background: rgba(255, 69, 0, 0.1);
-    border-color: rgba(255, 69, 0, 0.4);
-}
-
-.activity-icon {
-    font-size: 1.2rem;
-    flex-shrink: 0;
-}
-
-.activity-main {
-    flex: 1;
-    min-width: 0;
-}
-
-.activity-text {
-    font-family: 'Quicksand', sans-serif;
-    font-size: 0.8rem;
-    color: #fff;
-    line-height: 1.3;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.activity-text strong {
-    color: #ffaa00;
-}
-
-.activity-meta {
-    font-family: 'Quicksand', sans-serif;
-    font-size: 0.65rem;
-    color: rgba(255, 255, 255, 0.4);
-    margin-top: 2px;
-}
-
-.whisper-snippet {
-    font-size: 0.75rem;
-    color: rgba(255, 202, 153, 0.7);
-    font-style: italic;
-    margin-top: 3px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-/* Empty State */
-.empty-state {
-    text-align: center;
-    padding: 40px 20px;
-    opacity: 0.5;
-}
-
-.empty-icon {
-    font-size: 2rem;
-    margin-bottom: 10px;
-}
-
-.empty-text {
-    font-family: 'Quicksand', sans-serif;
-    font-size: 0.8rem;
-}
-
-/* Main Layout */
-.main {
-    display: flex;
-    flex-direction: column;
-    height: calc(100vh - 50px);
-}
-
-.section {
-    display: none;
-}
-
-.section.active {
-    display: block;
-}
-
-</style>
-<link rel="stylesheet" href="theme.css">
-</head>
-<body>
-
-<div class="header">
-    <button class="back-btn" onclick="window.whisprBack('enter.html')">← Back</button>
-    <div class="page-title">WHISPR · Your Echoes</div>
-    <div style="width: 60px;"></div>
-</div>
-
-<div class="main">
-    <!-- Compact Stats -->
-    <div class="stats-row">
-        <div class="stat-item">
-            <span class="stat-num" id="totalWhispers">0</span>
-            <span class="stat-label">Whispers</span>
-        </div>
-        <div class="stat-item">
-            <span class="stat-num" id="totalReactions">0</span>
-            <span class="stat-label">Reactions</span>
-        </div>
-        <div class="stat-item">
-            <span class="stat-num" id="totalComments">0</span>
-            <span class="stat-label">Comments</span>
-        </div>
-    </div>
-
-    <div class="notifications-controls">
-        <button id="enableNotificationsBtn" type="button" aria-pressed="false">Enable sound &amp; alerts</button>
-        <span id="notificationStatus" role="status" aria-live="polite">Turn on alerts to hear about new activity while WHISPR is open.</span>
-    </div>
-
-    <!-- Tabs -->
-    <div class="tabs">
-        <button class="tab active" onclick="showTab('all', this)">All</button>
-        <button class="tab" onclick="showTab('reactions', this)">Reactions</button>
-        <button class="tab" onclick="showTab('comments', this)">Comments</button>
-        <button class="tab" onclick="showTab('catches', this)">Catches</button>
-    </div>
-
-    <!-- Activity Lists -->
-    <div class="activity-container">
-        <div id="section-all" class="section active">
-            <div id="allActivityList"><div class="empty-state"><div class="empty-icon">🌙</div><div class="empty-text">Loading...</div></div></div>
-        </div>
-        <div id="section-reactions" class="section">
-            <div id="reactionsList"><div class="empty-state"><div class="empty-icon">🌙</div><div class="empty-text">No reactions yet</div></div></div>
-        </div>
-        <div id="section-comments" class="section">
-            <div id="commentsList"><div class="empty-state"><div class="empty-icon">🌙</div><div class="empty-text">No comments yet</div></div></div>
-        </div>
-        <div id="section-catches" class="section">
-            <div id="catchesList"><div class="empty-state"><div class="empty-icon">🌙</div><div class="empty-text">No catches yet</div></div></div>
-        </div>
-    </div>
-</div>
-
-<script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { 
-    getFirestore, 
-    collection, 
-    doc,
-    getDoc,
-    query, 
-    where, 
-    orderBy, 
-    getDocs,
-    onSnapshot
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { searchUsers, userDisplayName, userAvatar } from "./user-search.js";
+import { getFirestore, collection, doc, getDoc, setDoc, updateDoc, deleteField, FieldPath, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyBSmm2lC7iAMmQJqsG_jXi4DWpL7ghcJnc",
-    authDomain: "whispr-92fc0.firebaseapp.com",
-    projectId: "whispr-92fc0",
-    storageBucket: "whispr-92fc0.firebasestorage.app",
-    messagingSenderId: "133594748424",
-    appId: "1:133594748424:web:7dc7ff44e105d2d5cee3bd"
+  apiKey: "AIzaSyBSmm2lC7iAMmQJqsG_jXi4DWpL7ghcJnc",
+  authDomain: "whispr-92fc0.firebaseapp.com",
+  projectId: "whispr-92fc0",
+  storageBucket: "whispr-92fc0.firebasestorage.app",
+  messagingSenderId: "133594748424",
+  appId: "1:133594748424:web:7dc7ff44e105d2d5cee3bd"
 };
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
+const results = document.getElementById("results");
+const searchInput = document.getElementById("searchInput");
+const statusMessage = document.getElementById("statusMessage");
+const peopleSection = document.getElementById("peopleSection");
+const peopleResults = document.getElementById("peopleResults");
+const conversationHeading = document.getElementById("conversationHeading");
+const groupModal = document.getElementById("groupModal");
+let activeUser = null;
+let cachedChats = [];
+let stopChats = null;
+let peopleSearchTimer = null;
+let peopleSearchToken = 0;
 
-let currentUser = null;
-let unsubscribers = [];
-const alertsButton = document.getElementById("enableNotificationsBtn");
-const notificationStatus = document.getElementById("notificationStatus");
-
-function syncAlertButton() {
-    let soundOn = false;
-    try { soundOn = localStorage.getItem("whispr-notification-sound") === "on"; } catch (_) {}
-    alertsButton.setAttribute("aria-pressed", String(soundOn));
-    alertsButton.textContent = soundOn ? "Turn off sound" : "Enable sound & alerts";
-}
-syncAlertButton();
-alertsButton.addEventListener("click", async () => {
-    const soundOn = alertsButton.getAttribute("aria-pressed") !== "true";
-    try { localStorage.setItem("whispr-notification-sound", soundOn ? "on" : "off"); } catch (_) {}
-    syncAlertButton();
-    if (soundOn) window.whisprUnlockAudio?.();
-    let permission = "unsupported";
-    if (soundOn && "Notification" in window) {
-        try { permission = await Notification.requestPermission(); } catch (_) {}
+function makeChatItem(chat) {
+  const item = document.createElement("article");
+  item.className = "chat-item";
+  item.tabIndex = 0;
+  const title = chat.isGroup ? (chat.groupName || "Group chat") : (chat.otherUsername || "Anonymous");
+  const openChat = () => {
+    if (chat.isGroup) window.location.href = `chat.html?group=${encodeURIComponent(chat.conversationId)}`;
+    else window.location.href = `chat.html?uid=${encodeURIComponent(chat.otherUserId)}&name=${encodeURIComponent(title)}`;
+  };
+  const profileUrl = `other.html?uid=${encodeURIComponent(chat.otherUserId || "")}`;
+  const avatar = chat.isGroup ? document.createElement("div") : document.createElement("a");
+  avatar.className = "avatar-link";
+  if (!chat.isGroup && chat.otherUserId) {
+    avatar.href = profileUrl;
+    avatar.setAttribute("aria-label", `Visit ${title}'s profile`);
+    avatar.addEventListener("click", event => event.stopPropagation());
+  }
+  const avatarImage = document.createElement("img");
+  avatarImage.className = "avatar";
+  avatarImage.alt = chat.isGroup ? "Group conversation" : `${title}'s profile`;
+  if (chat.otherAvatarUrl) avatarImage.src = chat.otherAvatarUrl;
+  else avatarImage.hidden = true;
+  const avatarInitial = document.createElement("span");
+  avatarInitial.className = "avatar-initial";
+  avatarInitial.textContent = chat.isGroup ? "✦" : title.charAt(0).toUpperCase();
+  avatar.append(avatarInitial, avatarImage);
+  const info = document.createElement("div");
+  info.className = "chat-info";
+  const name = chat.isGroup ? document.createElement("div") : document.createElement("a");
+  name.className = "chat-title";
+  name.textContent = title;
+  if (!chat.isGroup && chat.otherUserId) {
+    name.href = profileUrl;
+    name.setAttribute("aria-label", `Visit ${title}'s profile`);
+    name.addEventListener("click", event => event.stopPropagation());
+  }
+  const preview = document.createElement("div");
+  preview.className = "last-message";
+  preview.textContent = chat.lastMessageText || (chat.isGroup ? "Group conversation" : "Start a conversation");
+  info.append(name, preview);
+  if (Number(chat.unreadCount) > 0) {
+    const badge = document.createElement("span");
+    badge.className = "unread";
+    badge.textContent = String(chat.unreadCount);
+    name.appendChild(badge);
+  }
+  const deleteButton = document.createElement("button");
+  deleteButton.type = "button";
+  deleteButton.className = "delete-chat-btn";
+  deleteButton.textContent = "Remove";
+  deleteButton.setAttribute("aria-label", `Remove conversation with ${title}`);
+  deleteButton.hidden = true;
+  const revealDelete = () => {
+    deleteButton.hidden = false;
+    deleteButton.focus();
+    statusMessage.textContent = `Remove option revealed for ${title}.`;
+  };
+  let holdTimer = null;
+  let holdTriggered = false;
+  let suppressOpen = false;
+  item.addEventListener("pointerdown", event => {
+    if (event.target.closest("a, button")) return;
+    holdTriggered = false;
+    holdTimer = setTimeout(() => {
+      holdTriggered = true;
+      suppressOpen = true;
+      revealDelete();
+    }, 650);
+  });
+  const cancelHold = () => {
+    clearTimeout(holdTimer);
+    holdTimer = null;
+    if (holdTriggered) setTimeout(() => { suppressOpen = false; }, 800);
+  };
+  item.addEventListener("pointerup", cancelHold);
+  item.addEventListener("pointerleave", cancelHold);
+  item.addEventListener("pointercancel", cancelHold);
+  item.addEventListener("contextmenu", event => {
+    event.preventDefault();
+    revealDelete();
+  });
+  item.addEventListener("keydown", event => {
+    if (event.shiftKey && event.key === "Delete") {
+      event.preventDefault();
+      revealDelete();
     }
-    notificationStatus.textContent = !soundOn
-        ? "Sound is off. Activity still appears in your WHISPR feed."
-        : permission === "granted"
-            ? "Sound is on. Browser alerts can appear when WHISPR is in the background."
-            : permission === "denied"
-                ? "Sound is on; browser alerts are blocked by your browser settings."
-                : "Sound is on while WHISPR is open. Browser alerts may need permission in your browser settings.";
-    if (soundOn && window.whisprNotify) window.whisprNotify("WHISPR alerts enabled", "You’ll hear a soft tone for new activity.");
-});
+  });
+  deleteButton.addEventListener("click", async event => {
+    event.stopPropagation();
+    if (!activeUser || !await window.whisprConfirm("Remove this conversation from your messages? The messages remain available to other members.", { title: "Remove conversation", confirmText: "Remove", danger: true })) return;
+    deleteButton.disabled = true;
+    try {
+      await updateDoc(doc(db, "userChats", activeUser.uid), new FieldPath(chat.conversationId), deleteField());
+      statusMessage.textContent = "Conversation removed from your messages.";
+    } catch (error) {
+      console.error("Could not delete conversation", error);
+      statusMessage.textContent = "Could not remove this conversation. Check your access permissions and try again.";
+      deleteButton.disabled = false;
+    }
+  });
+  item.append(avatar, info, deleteButton);
+  item.addEventListener("click", event => {
+    if (suppressOpen) {
+      event.preventDefault();
+      event.stopPropagation();
+      suppressOpen = false;
+      return;
+    }
+    if (!event.target.closest("button, a")) openChat();
+  });
+  item.addEventListener("keydown", event => {
+    if (event.target.closest("a, button")) return;
+    if (event.key === "Enter" || event.key === " ") { event.preventDefault(); openChat(); }
+  });
+  avatarImage.addEventListener("error", () => { avatarImage.hidden = true; });
+  return item;
+}
+function makePersonItem(person) {
+  const name = userDisplayName(person);
+  const item = document.createElement("a");
+  item.className = "chat-item";
+  item.href = `chat.html?uid=${encodeURIComponent(person.uid)}&name=${encodeURIComponent(name)}`;
+  const avatar = document.createElement("span");
+  avatar.className = "avatar-link";
+  avatar.textContent = name.charAt(0).toUpperCase();
+  const avatarUrl = userAvatar(person);
+  if (avatarUrl) {
+    const image = document.createElement("img");
+    image.className = "avatar";
+    image.alt = "";
+    image.src = avatarUrl;
+    image.onerror = () => image.remove();
+    avatar.appendChild(image);
+  }
+  const info = document.createElement("span");
+  info.className = "chat-info";
+  const title = document.createElement("span");
+  title.className = "chat-title";
+  title.textContent = name;
+  const detail = document.createElement("span");
+  detail.className = "last-message";
+  detail.textContent = person.username ? `@${person.username} · Start a conversation` : "Start a conversation";
+  info.append(title, detail);
+  item.append(avatar, info);
+  return item;
+}
+function renderChats() {
+  const filter = searchInput.value.trim().toLowerCase();
+  conversationHeading.textContent = filter ? "Matching conversations" : "Conversations";
+  results.replaceChildren();
+  const visible = cachedChats.filter(chat => `${chat.groupName || ""} ${chat.otherUsername || ""} ${chat.lastMessageText || ""}`.toLowerCase().includes(filter));
+  if (!visible.length) {
+    const empty = document.createElement("div");
+    empty.className = "empty-state";
+    empty.textContent = cachedChats.length ? "No conversations match your search." : "No conversations yet. Find someone or create a group.";
+    results.appendChild(empty);
+    return;
+  }
+  visible.forEach(chat => results.appendChild(makeChatItem(chat)));
+}
+function conversationSort(a, b) {
+  return (b.lastMessageTime?.seconds || 0) - (a.lastMessageTime?.seconds || 0);
+}
 
-window.showTab = function(tabName, btn) {
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-    btn.classList.add('active');
-    document.getElementById(`section-${tabName}`).classList.add('active');
-};
-
-onAuthStateChanged(auth, async user => {
-    if(!user) { window.location.href = "login.html"; return; }
-    currentUser = user;
-    await loadActivity();
-});
-
-async function loadActivity() {
-    unsubscribers.forEach(u => u());
-    unsubscribers = [];
-    
-    const whispersSnap = await getDocs(query(collection(db, "whispers"), where("uid", "==", currentUser.uid)));
-    const whispers = [];
-    whispersSnap.forEach(d => whispers.push({ id: d.id, ...d.data() }));
-    
-    document.getElementById('totalWhispers').textContent = whispers.length;
-    
-    const all = [], reactions = [], comments = [], catches = [];
-    let reactCount = 0, commentCount = 0;
-    
-    for(const w of whispers) {
-        let previousReactions = null;
-        const reactionUnsubscribe = onSnapshot(doc(db, "whispers", w.id), async whisperSnap => {
-            if (!whisperSnap.exists()) return;
-            const latest = whisperSnap.data();
-            const oldReactions = previousReactions;
-            previousReactions = { ...(latest.reactions || {}) };
-            const freshReactions = [];
-            for (const [uid, type] of Object.entries(latest.reactions || {})) {
-                if (uid === currentUser.uid || !type) continue;
-                let actor = "Someone";
-                try {
-                    const actorSnap = await getDoc(doc(db, "users", uid));
-                    if (actorSnap.exists()) {
-                        const profile = actorSnap.data();
-                        actor = profile.username || profile.displayName || actor;
-                    }
-                } catch (error) {
-                    console.warn("Could not load reaction profile", error);
-                }
-                const action = type === "❤️" ? "liked your whisper" : `reacted ${type} to your whisper`;
-                freshReactions.push({ type: 'reaction', icon: type, text: `${actor} ${action}`, time: latest.timestamp || w.timestamp, whisper: latest.message || w.message, id: w.id });
-                if (oldReactions && oldReactions[uid] !== type) {
-                    window.whisprNotify?.("New reaction", `${actor} ${action}.`, { tag: `reaction-${w.id}-${uid}`, url: `whisper.html#${encodeURIComponent(w.id)}` });
-                }
-            }
-            const keepOther = item => item.id !== w.id || item.type !== 'reaction';
-            all.splice(0, all.length, ...all.filter(keepOther), ...freshReactions);
-            reactions.splice(0, reactions.length, ...reactions.filter(keepOther), ...freshReactions);
-            reactCount = reactions.length;
-            document.getElementById('totalReactions').textContent = reactCount;
-            updateDisplay(all, reactions, comments, catches);
-        });
-        unsubscribers.push(reactionUnsubscribe);
-        
-        let initialCommentsSnapshot = true;
-        const unsub = onSnapshot(query(collection(db, "whispers", w.id, "comments"), orderBy("timestamp", "desc")), snap => {
-            const isInitialSnapshot = initialCommentsSnapshot;
-            initialCommentsSnapshot = false;
-            snap.docChanges().forEach(c => {
-                if(c.type === "added") {
-                    const d = c.data();
-                    if(d.uid !== currentUser.uid) {
-                        commentCount++;
-                        document.getElementById('totalComments').textContent = commentCount;
-                        const actor = d.from || "Someone";
-                        const act = { type: 'comment', icon: '💬', text: `${actor} commented: ${truncate(d.text, 50)}`, time: d.timestamp, whisper: w.message, id: w.id };
-                        all.push(act); comments.push(act);
-                        if (!isInitialSnapshot) {
-                            window.whisprNotify?.("New comment", `${actor} commented on your whisper.`, { tag: `comment-${c.doc.id}`, url: `whisper.html#${encodeURIComponent(w.id)}` });
-                        }
-                        updateDisplay(all, reactions, comments, catches);
-                    }
-                }
-            });
-        });
-        unsubscribers.push(unsub);
-        
-        if((w.reactions && Object.keys(w.reactions).length > 0)) {
-            catches.push({ type: 'catch', icon: '🕸️', text: 'Caught in the void', time: w.timestamp, whisper: w.message, id: w.id });
+onAuthStateChanged(auth, user => {
+  if (!user) { window.location.href = "login.html"; return; }
+  activeUser = user;
+  if (stopChats) stopChats();
+  stopChats = onSnapshot(doc(db, "userChats", user.uid), async snapshot => {
+    const data = snapshot.data() || {};
+    const chats = Object.entries(data).map(([id, value]) => ({ ...value, conversationId: value.conversationId || id }));
+    chats.sort(conversationSort);
+    await Promise.all(chats.map(async chat => {
+      if (chat.isGroup || chat.otherUsername || !chat.otherUserId) return;
+      try {
+        const userSnap = await getDoc(doc(db, "users", chat.otherUserId));
+        if (userSnap.exists()) {
+          const person = userSnap.data();
+          chat.otherUsername = person.username || person.displayName || "Anonymous";
+          chat.otherAvatarUrl = chat.otherAvatarUrl || person.avatarUrl || person.photoURL || person.photoUrl || person.profileImage || "";
         }
-    }
-    
-    document.getElementById('totalReactions').textContent = reactCount;
-    document.getElementById('totalComments').textContent = commentCount;
-    updateDisplay(all, reactions, comments, catches);
-}
+      } catch (error) { console.warn("Could not load conversation profile", error); }
+    }));
+    cachedChats = chats;
+    renderChats();
+  }, error => {
+    console.error("Could not load conversations", error);
+    statusMessage.textContent = "Could not load conversations. Check your connection and access permissions.";
+    results.innerHTML = '<div class="empty-state">Unable to load conversations.</div>';
+  });
+});
 
-function updateDisplay(all, reactions, comments, catches) {
-    const sort = (a, b) => (b.time?.toMillis?.() || 0) - (a.time?.toMillis?.() || 0);
-    [all, reactions, comments, catches].forEach(arr => arr.sort(sort));
-    
-    render('allActivityList', all);
-    render('reactionsList', reactions);
-    render('commentsList', comments);
-    render('catchesList', catches);
-}
-
-function render(id, items) {
-    const el = document.getElementById(id);
-    el.replaceChildren();
-    if (!items.length) {
-        const empty = document.createElement('div');
-        empty.className = 'empty-state';
-        empty.innerHTML = '<div class="empty-icon">🌙</div><div class="empty-text">The void is silent...</div>';
-        el.appendChild(empty);
+function searchPeople(term) {
+  const token = ++peopleSearchToken;
+  clearTimeout(peopleSearchTimer);
+  if (!term) {
+    peopleSection.hidden = true;
+    peopleResults.replaceChildren();
+    return;
+  }
+  peopleSection.hidden = false;
+  peopleResults.innerHTML = '<div class="empty-state">Searching people by username or email…</div>';
+  peopleSearchTimer = setTimeout(async () => {
+    if (!activeUser) return;
+    try {
+      const people = await searchUsers(db, term, activeUser.uid);
+      if (token !== peopleSearchToken) return;
+      peopleResults.replaceChildren();
+      if (!people.length) {
+        const empty = document.createElement("div");
+        empty.className = "empty-state";
+        empty.textContent = "No people found for that username or email.";
+        peopleResults.appendChild(empty);
         return;
+      }
+      people.forEach(person => peopleResults.appendChild(makePersonItem(person)));
+    } catch (error) {
+      if (token !== peopleSearchToken) return;
+      console.warn("People search failed", error);
+      peopleResults.innerHTML = '<div class="empty-state">People search is unavailable right now.</div>';
     }
-    items.forEach(item => {
-        const card = document.createElement('article');
-        card.className = 'activity-card';
-        card.tabIndex = 0;
-        card.setAttribute('role', 'link');
-        const openWhisper = () => { window.location.href = `whisper.html#${encodeURIComponent(item.id)}`; };
-        card.addEventListener('click', openWhisper);
-        card.addEventListener('keydown', event => {
-            if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openWhisper(); }
-        });
+  }, 250);
+}
+searchInput.addEventListener("input", () => {
+  renderChats();
+  searchPeople(searchInput.value.trim());
+});
+document.getElementById("backBtn").addEventListener("click", () => window.whisprBack("enter.html"));
+document.getElementById("groupBtn").addEventListener("click", () => {
+  groupModal.hidden = false;
+  document.getElementById("groupName").focus();
+});
+document.getElementById("closeGroupBtn").addEventListener("click", () => { groupModal.hidden = true; });
+groupModal.addEventListener("click", e => { if (e.target === groupModal) groupModal.hidden = true; });
 
-        const icon = document.createElement('span');
-        icon.className = 'activity-icon';
-        icon.textContent = item.icon || '✨';
-        const main = document.createElement('div');
-        main.className = 'activity-main';
-        const text = document.createElement('div');
-        text.className = 'activity-text';
-        text.textContent = item.text || 'New activity';
-        const meta = document.createElement('div');
-        meta.className = 'activity-meta';
-        meta.textContent = formatTime(item.time);
-        main.append(text, meta);
-        if (item.whisper) {
-            const snippet = document.createElement('div');
-            snippet.className = 'whisper-snippet';
-            snippet.textContent = `“${truncate(item.whisper, 60)}”`;
-            main.appendChild(snippet);
-        }
-        card.append(icon, main);
-        el.appendChild(card);
+function makeId() {
+  return globalThis.crypto?.randomUUID ? crypto.randomUUID() : `${Date.now()}_${Math.random().toString(36).slice(2)}`;
+}
+document.getElementById("groupForm").addEventListener("submit", async event => {
+  event.preventDefault();
+  const submit = document.getElementById("createGroupBtn");
+  const groupStatus = document.getElementById("groupStatus");
+  const groupName = document.getElementById("groupName").value.trim();
+  const usernames = [...new Set(document.getElementById("groupMembers").value.split(",").map(name => name.trim().toLowerCase()).filter(Boolean))];
+  if (!activeUser || !groupName || !usernames.length) {
+    groupStatus.textContent = "Add a group name and at least one username.";
+    return;
+  }
+  submit.disabled = true;
+  groupStatus.textContent = "Finding members…";
+  try {
+    const members = new Set([activeUser.uid]);
+    for (const username of usernames) {
+      const nameSnap = await getDoc(doc(db, "usernames", username));
+      if (!nameSnap.exists()) throw new Error(`Could not find @${username}. Check the username and try again.`);
+      const uid = nameSnap.data().uid;
+      if (uid && uid !== activeUser.uid) members.add(uid);
+    }
+    if (members.size < 2) throw new Error("A group needs at least one other member.");
+    const memberIds = [...members];
+    const groupId = `group_${makeId()}`;
+    await setDoc(doc(db, "groupChats", groupId), {
+      name: groupName,
+      members: memberIds,
+      createdBy: activeUser.uid,
+      createdAt: serverTimestamp()
     });
-}
-
-function formatTime(t) {
-    if(!t) return 'now';
-    const d = t.toDate ? t.toDate() : new Date(t);
-    const diff = (Date.now() - d) / 1000;
-    if(diff < 60) return 'now';
-    if(diff < 3600) return `${Math.floor(diff/60)}m`;
-    if(diff < 86400) return `${Math.floor(diff/3600)}h`;
-    return `${Math.floor(diff/86400)}d`;
-}
-
-function truncate(s, l) {
-    if(!s) return '';
-    return s.length > l ? s.slice(0, l) + '...' : s;
-}
-</script>
-<script src="theme.js" defer></script>
-</body>
-</html>
+    await Promise.all(memberIds.map(uid => setDoc(doc(db, "userChats", uid), {
+      [groupId]: {
+        conversationId: groupId,
+        isGroup: true,
+        groupName,
+        memberIds,
+        lastMessageText: "Group created",
+        lastMessageTime: serverTimestamp(),
+        unreadCount: 0
+      }
+    }, { merge: true })));
+    window.location.href = `chat.html?group=${encodeURIComponent(groupId)}`;
+  } catch (error) {
+    console.error("Could not create group", error);
+    groupStatus.textContent = error.message || "Could not create the group.";
+    submit.disabled = false;
+  }
+});
