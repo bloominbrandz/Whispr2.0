@@ -1,45 +1,228 @@
-/* Shared WHISPR theme layer */
-body { font-family: 'Quicksand', sans-serif; }
-#navStrip { gap: 10px; }
-.nav-item { width: 44px; height: 44px; padding: 0; border-radius: 15px; }
-.nav-item svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
-.splash-container img { width: 170px; filter: drop-shadow(0 10px 28px rgba(255, 111, 45, .35)); }
-#returnBtn { border-radius: 15px; }
-body:has(#netDock) .theme-toggle { top: 18px; bottom: auto; }
-.page-title { font-family: 'Shadows Into Light', cursive; letter-spacing: .03em; }
-.notifications-placeholder { color: inherit; }
-.header .identity img, .brand img { filter: drop-shadow(0 7px 18px rgba(255, 130, 55, .35)); }
-/* Polished activity/notification cards */
-body:has(.activity-container) { font-family: 'Quicksand', sans-serif; background: radial-gradient(ellipse at 50% -25%, rgba(255, 83, 24, .12), transparent 55%), #050200; }
-body:has(.activity-container) .header { height: 72px; padding: 0 22px; }
-body:has(.activity-container) .page-title { color: #ffca99; font-size: 1.45rem; }
-body:has(.activity-container) .main { height: calc(100vh - 72px); max-width: 920px; width: 100%; margin: 0 auto; padding: 14px 18px 0; }
-body:has(.activity-container) .stats-row { gap: 12px; padding: 12px 0 16px; }
-body:has(.activity-container) .stat-item { border-radius: 16px; padding: 14px; background: rgba(255,255,255,.045); }
-body:has(.activity-container) .stat-num { color: #ff8257; font-family: 'Quicksand', sans-serif; font-size: 1.45rem; }
-body:has(.activity-container) .stat-label { font-size: .72rem; letter-spacing: .04em; }
-body:has(.activity-container) .tabs { gap: 8px; padding: 0; }
-body:has(.activity-container) .tab { flex: initial; min-width: 92px; padding: 12px 15px; border-radius: 12px 12px 0 0; font-size: .82rem; }
-body:has(.activity-container) .activity-container { padding: 16px 0 30px; }
-body:has(.activity-container) .activity-card { min-height: 76px; margin: 0 0 10px; padding: 15px 17px; gap: 14px; border-radius: 16px; background: rgba(255,255,255,.045); }
-body:has(.activity-container) .activity-card:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(255,69,0,.09); }
-body:has(.activity-container) .activity-icon { width: 42px; height: 42px; display: grid; place-items: center; border-radius: 14px; background: rgba(255,90,43,.12); font-size: 1.3rem; }
-body:has(.activity-container) .activity-text { font-size: .9rem; white-space: normal; }
-body:has(.activity-container) .activity-meta { margin-top: 5px; font-size: .72rem; }
-body:has(.activity-container) .whisper-snippet { margin-top: 7px; font-size: .8rem; }
-body:has(.activity-container) .empty-state { padding: 56px 20px; border: 1px dashed rgba(255,120,70,.25); border-radius: 18px; }
-@media(max-width: 620px) {
-  body:has(.activity-container) .main { padding: 10px 12px 0; }
-  body:has(.activity-container) .header { padding: 0 12px; }
-  body:has(.activity-container) .stats-row { gap: 7px; }
-  body:has(.activity-container) .stat-item { padding: 10px 5px; }
-  body:has(.activity-container) .tabs { overflow-x: auto; }
-  body:has(.activity-container) .tab { min-width: 78px; padding: 10px 8px; }
+/* Shared monochrome theme coverage and WHISPR-native dialogs/notifications. */
+html:not([data-theme="light"]) {
+  --app-bg: #080808;
+  --app-surface: #151515;
+  --app-raised: #202020;
+  --app-text: #f5f5f5;
+  --app-muted: #b5b5b5;
+  --app-line: #414141;
+  --app-accent: #fff;
 }
-html[data-theme="light"] body:has(.activity-container) .tab { color: #79665c; }
-html[data-theme="light"] body:has(.activity-container) .tab.active { color: #aa4525; }
+html[data-theme="light"] {
+  --app-bg: #f4f4f4;
+  --app-surface: #fff;
+  --app-raised: #f0f0f0;
+  --app-text: #171717;
+  --app-muted: #5d5d5d;
+  --app-line: #d1d1d1;
+  --app-accent: #171717;
+}
+html:not([data-theme="light"]) body,
+html[data-theme="light"] body {
+  background-color: var(--app-bg) !important;
+  color: var(--app-text) !important;
+}
+html:not([data-theme="light"]) body button,
+html:not([data-theme="light"]) body .nav-btn,
+html:not([data-theme="light"]) body .back-btn,
+html:not([data-theme="light"]) body .backBtn,
+html:not([data-theme="light"]) body .back-home,
+html:not([data-theme="light"]) body .back,
+html:not([data-theme="light"]) body .edit-btn,
+html:not([data-theme="light"]) body .action-btn.secondary,
+html:not([data-theme="light"]) body .tab,
+html:not([data-theme="light"]) body .confirm-btn:not(.danger) {
+  background-color: #171717 !important;
+  border-color: #777 !important;
+  color: #fff !important;
+}
+html[data-theme="light"] body button,
+html[data-theme="light"] body .nav-btn,
+html[data-theme="light"] body .back-btn,
+html[data-theme="light"] body .backBtn,
+html[data-theme="light"] body .back-home,
+html[data-theme="light"] body .back,
+html[data-theme="light"] body .edit-btn,
+html[data-theme="light"] body .action-btn.secondary,
+html[data-theme="light"] body .tab,
+html[data-theme="light"] body .confirm-btn:not(.danger) {
+  background-color: #fff !important;
+  border-color: #777 !important;
+  color: #111 !important;
+}
+html:not([data-theme="light"]) body button.primary-btn,
+html:not([data-theme="light"]) body button.submit-btn,
+html:not([data-theme="light"]) body button.go-btn,
+html:not([data-theme="light"]) body button.comment-submit,
+html:not([data-theme="light"]) body button#searchBtn,
+html:not([data-theme="light"]) body button#loginBtn,
+html:not([data-theme="light"]) body button#signupBtn,
+html:not([data-theme="light"]) body button.danger,
+html[data-theme="light"] body button.primary-btn,
+html[data-theme="light"] body button.submit-btn,
+html[data-theme="light"] body button.go-btn,
+html[data-theme="light"] body button.comment-submit,
+html[data-theme="light"] body button#searchBtn,
+html[data-theme="light"] body button#loginBtn,
+html[data-theme="light"] body button#signupBtn,
+html[data-theme="light"] body button.danger {
+  background: var(--app-accent) !important;
+  border-color: var(--app-accent) !important;
+  color: var(--app-bg) !important;
+}
+html:not([data-theme="light"]) body input,
+html:not([data-theme="light"]) body textarea,
+html:not([data-theme="light"]) body select {
+  background-color: #111 !important;
+  color: #fff !important;
+  border-color: #777 !important;
+}
+html[data-theme="light"] body input,
+html[data-theme="light"] body textarea,
+html[data-theme="light"] body select {
+  background-color: #fff !important;
+  color: #171717 !important;
+  border-color: #888 !important;
+}
+html:not([data-theme="light"]) body .header,
+html:not([data-theme="light"]) body .container,
+html:not([data-theme="light"]) body .wrapper,
+html:not([data-theme="light"]) body .profile-card,
+html:not([data-theme="light"]) body .profile-box,
+html:not([data-theme="light"]) body .whispers-container,
+html:not([data-theme="light"]) body .whisper-box,
+html:not([data-theme="light"]) body .activity-card,
+html:not([data-theme="light"]) body .stat-box,
+html:not([data-theme="light"]) body .stat-item,
+html:not([data-theme="light"]) body .chat-item,
+html:not([data-theme="light"]) body .comment-item,
+html:not([data-theme="light"]) body .modal-content,
+html:not([data-theme="light"]) body .popup-content,
+html:not([data-theme="light"]) body .confirm-content,
+html:not([data-theme="light"]) body .group-modal {
+  background-color: var(--app-surface) !important;
+  border-color: var(--app-line) !important;
+  color: var(--app-text) !important;
+}
+html[data-theme="light"] body .header,
+html[data-theme="light"] body .container,
+html[data-theme="light"] body .wrapper,
+html[data-theme="light"] body .profile-card,
+html[data-theme="light"] body .profile-box,
+html[data-theme="light"] body .whispers-container,
+html[data-theme="light"] body .whisper-box,
+html[data-theme="light"] body .activity-card,
+html[data-theme="light"] body .stat-box,
+html[data-theme="light"] body .stat-item,
+html[data-theme="light"] body .chat-item,
+html[data-theme="light"] body .comment-item,
+html[data-theme="light"] body .modal-content,
+html[data-theme="light"] body .popup-content,
+html[data-theme="light"] body .confirm-content,
+html[data-theme="light"] body .group-modal {
+  background-color: var(--app-surface) !important;
+  border-color: var(--app-line) !important;
+  color: var(--app-text) !important;
+}
+html:not([data-theme="light"]) body .page-title,
+html:not([data-theme="light"]) body .section-title,
+html:not([data-theme="light"]) body .section-heading,
+html:not([data-theme="light"]) body .stat-num,
+html:not([data-theme="light"]) body .username,
+html:not([data-theme="light"]) body .profile-name,
+html:not([data-theme="light"]) body .modal-title,
+html:not([data-theme="light"]) body .confirm-title,
+html:not([data-theme="light"]) body .comments-title,
+html:not([data-theme="light"]) body .follower-name,
+html[data-theme="light"] body .page-title,
+html[data-theme="light"] body .section-title,
+html[data-theme="light"] body .section-heading,
+html[data-theme="light"] body .stat-num,
+html[data-theme="light"] body .username,
+html[data-theme="light"] body .profile-name,
+html[data-theme="light"] body .modal-title,
+html[data-theme="light"] body .confirm-title,
+html[data-theme="light"] body .comments-title,
+html[data-theme="light"] body .follower-name { color: var(--app-accent) !important; }
+html:not([data-theme="light"]) body .last-message,
+html:not([data-theme="light"]) body .profile-bio,
+html:not([data-theme="light"]) body .activity-meta,
+html:not([data-theme="light"]) body .stat-label,
+html:not([data-theme="light"]) body .info-text,
+html:not([data-theme="light"]) body .empty-state,
+html[data-theme="light"] body .last-message,
+html[data-theme="light"] body .profile-bio,
+html[data-theme="light"] body .activity-meta,
+html[data-theme="light"] body .stat-label,
+html[data-theme="light"] body .info-text,
+html[data-theme="light"] body .empty-state { color: var(--app-muted) !important; }
+html:not([data-theme="light"]) body .activity-text,
+html:not([data-theme="light"]) body .comment-text,
+html:not([data-theme="light"]) body .reaction-count,
+html[data-theme="light"] body .activity-text,
+html[data-theme="light"] body .comment-text,
+html[data-theme="light"] body .reaction-count { color: var(--app-text) !important; }
+.whispr-dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100001;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  background: rgba(0,0,0,.68);
+  backdrop-filter: blur(5px);
+}
+.whispr-dialog-backdrop[hidden] { display: none !important; }
+.whispr-dialog {
+  width: min(460px, 100%);
+  padding: 24px;
+  border: 1px solid var(--app-line);
+  border-radius: 18px;
+  background: var(--app-surface);
+  color: var(--app-text);
+  box-shadow: 0 22px 70px rgba(0,0,0,.42);
+  font-family: 'Quicksand', sans-serif;
+}
+.whispr-dialog h2 { margin: 0 0 10px; color: var(--app-text); font-size: 1.15rem; }
+.whispr-dialog p { margin: 0; color: var(--app-muted); line-height: 1.6; }
+.whispr-dialog-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 22px; }
+.whispr-dialog-actions button {
+  min-height: 42px;
+  padding: 9px 16px;
+  border: 1px solid var(--app-line);
+  border-radius: 11px;
+  background: var(--app-raised);
+  color: var(--app-text);
+  font: 600 .88rem 'Quicksand', sans-serif;
+  cursor: pointer;
+}
+.whispr-dialog-actions button.danger { background: #fff !important; color: #111 !important; }
+html[data-theme="light"] .whispr-dialog-actions button.danger { background: #171717 !important; color: #fff !important; }
+.whispr-toast {
+  position: fixed;
+  right: 18px;
+  top: 18px;
+  z-index: 100002;
+  display: grid;
+  gap: 3px;
+  width: min(360px, calc(100vw - 36px));
+  padding: 14px 16px;
+  border: 1px solid var(--app-line);
+  border-radius: 14px;
+  background: var(--app-surface);
+  color: var(--app-text);
+  box-shadow: 0 12px 35px rgba(0,0,0,.28);
+  font: .86rem/1.45 'Quicksand', sans-serif;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-8px);
+  transition: opacity .18s ease, transform .18s ease;
+}
+.whispr-toast.show { opacity: 1; transform: translateY(0); }
+.whispr-toast span { color: var(--app-muted); }
+@media (prefers-reduced-motion: reduce) { .whispr-toast { transition: none; } }
 
-:root { color-scheme: dark; }
+/* Shared controls and page layout refinements. */
 .theme-toggle {
   position: fixed;
   z-index: 100000;
@@ -50,263 +233,138 @@ html[data-theme="light"] body:has(.activity-container) .tab.active { color: #aa4
   gap: 8px;
   min-height: 42px;
   padding: 9px 14px;
-  border: 1px solid rgba(255, 126, 74, .42);
+  border: 1px solid var(--app-line) !important;
   border-radius: 999px;
-  background: rgba(18, 12, 10, .88);
-  color: #ffe0c4;
-  box-shadow: 0 8px 28px rgba(0, 0, 0, .28);
-  backdrop-filter: blur(14px);
+  background: var(--app-surface) !important;
+  color: var(--app-text) !important;
+  box-shadow: 0 8px 28px rgba(0,0,0,.25);
   font: 600 .82rem 'Quicksand', sans-serif;
   cursor: pointer;
-  transition: transform .2s ease, background .2s ease, border-color .2s ease;
 }
-.theme-toggle:hover { transform: translateY(-2px); border-color: #ff7043; }
-.theme-toggle:focus-visible { outline: 2px solid #ff9b70; outline-offset: 3px; }
+.theme-toggle:hover { transform: translateY(-2px); }
 .theme-toggle-icon { font-size: 1rem; }
-
-html[data-theme="light"], html[data-theme="light"] body {
-  color-scheme: light;
-  background: #f5f2ef !important;
-  color: #28201d !important;
+body:has(.settings-main) .theme-toggle,
+body:has(#navStrip) .theme-toggle { display: none !important; }
+body:has(#netDock) .theme-toggle { top: 18px; bottom: auto; }
+#navStrip { gap: 10px; }
+.nav-item { width: 44px; height: 44px; padding: 0; border-radius: 15px; }
+.nav-item svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.splash-container img { width: 170px; }
+#returnBtn { border-radius: 15px; }
+body:has(.activity-container) { display:flex; flex-direction:column; height:100vh; height:100dvh; overflow:hidden; }
+body:has(.activity-container) .header { height:72px; flex-shrink:0; }
+body:has(.activity-container) .main { flex:1; min-height:0; height:auto; display:flex; flex-direction:column; }
+body:has(.activity-container) .activity-container { flex:1; min-height:0; overflow-y:auto; padding-bottom:76px; }
+body:has(.activity-container) .stats-row { gap:12px; padding:12px 0 16px; }
+body:has(.activity-container) .stat-item { border-radius:16px; padding:14px; }
+body:has(.activity-container) .tabs { gap:8px; }
+body:has(.activity-container) .tab { flex:initial; min-width:92px; padding:12px 15px; border-radius:12px 12px 0 0; font-size:.82rem; }
+body:has(.activity-container) .activity-card { min-height:76px; margin:0 0 10px; padding:15px 17px; gap:14px; border-radius:16px; }
+body:has(.activity-container) .activity-icon { width:42px; height:42px; display:grid; place-items:center; border-radius:14px; }
+body:has(.activity-container) .activity-text { white-space:normal; }
+.notifications-controls { display:flex; align-items:center; gap:12px; padding:10px 15px; border-bottom:1px solid var(--app-line); font:500 .78rem 'Quicksand',sans-serif; color:var(--app-muted); }
+.notifications-controls button { flex:none; min-height:38px; padding:8px 12px; border:1px solid var(--app-line); border-radius:10px; background:var(--app-surface); color:var(--app-text); font:600 .78rem 'Quicksand',sans-serif; cursor:pointer; }
+.notifications-controls button[aria-pressed="true"] { background:var(--app-accent); color:var(--app-bg); }
+@media(max-width:620px) {
+  .theme-toggle { right:12px; bottom:12px; min-height:40px; padding:8px 12px; }
+  body:has(#netDock) .theme-toggle { top:12px; bottom:auto; }
+  body:has(.activity-container) .header { padding:0 12px; }
+  body:has(.activity-container) .stats-row { gap:7px; }
+  body:has(.activity-container) .stat-item { padding:10px 5px; }
+  body:has(.activity-container) .tabs { overflow-x:auto; }
+  body:has(.activity-container) .tab { min-width:78px; padding:10px 8px; }
+  .notifications-controls { align-items:flex-start; flex-direction:column; gap:7px; }
 }
-html[data-theme="light"] body { background-image: radial-gradient(ellipse at top, #fff8f0 0, #f3eeea 65%) !important; }
-html[data-theme="light"] .theme-toggle {
-  background: rgba(255, 255, 255, .92);
-  color: #552719;
-  border-color: rgba(191, 73, 31, .3);
-  box-shadow: 0 8px 24px rgba(81, 47, 31, .14);
+@media(max-width:500px) {
+  #navStrip { gap:4px; }
+  .nav-item { width:34px; height:34px; }
 }
-html[data-theme="light"] .header,
-html[data-theme="light"] .container,
-html[data-theme="light"] .group-modal,
-html[data-theme="light"] .call-card,
-html[data-theme="light"] .profile-box,
-html[data-theme="light"] .whispers-container,
-html[data-theme="light"] .stat-item,
-html[data-theme="light"] .stat-box,
-html[data-theme="light"] .activity-card,
-html[data-theme="light"] .chat-item,
-html[data-theme="light"] .comment-item,
-html[data-theme="light"] .whisper-box {
-  background-color: rgba(255, 255, 255, .82) !important;
-  color: #30231e !important;
-  border-color: rgba(172, 77, 42, .2) !important;
-  box-shadow: 0 12px 34px rgba(99, 56, 34, .07);
+@media(prefers-reduced-motion:reduce) {
+  *, *::before, *::after { scroll-behavior:auto !important; animation-duration:.01ms !important; transition:none !important; }
 }
-html[data-theme="light"] .header { background: rgba(255, 250, 246, .9) !important; }
-html[data-theme="light"] input,
-html[data-theme="light"] textarea,
-html[data-theme="light"] #searchInput,
-html[data-theme="light"] .group-modal input,
-html[data-theme="light"] .comment-input,
-html[data-theme="light"] #msgInput {
-  background: #fff !important;
-  color: #30231e !important;
-  border-color: rgba(172, 77, 42, .3) !important;
-}
-html[data-theme="light"] .activity-text,
-html[data-theme="light"] .last-message,
-html[data-theme="light"] .profile-bio,
-html[data-theme="light"] .comment-text,
-html[data-theme="light"] .stat-label,
-html[data-theme="light"] .activity-meta,
-html[data-theme="light"] .identity p,
-html[data-theme="light"] .search-label { color: #70615a !important; }
-html[data-theme="light"] .msg.received { background: #fff !important; color: #30231e !important; border-color: #eadbd2 !important; }
-html[data-theme="light"] .msg-time { color: #806e64 !important; }
-html[data-theme="light"] .empty-state { color: #806e64 !important; }
-html[data-theme="light"] .modal-content,
-html[data-theme="light"] #modalBox { background: rgba(255, 250, 246, .98) !important; color: #30231e !important; }
-html[data-theme="light"] .back-btn,
-html[data-theme="light"] .nav-btn,
-html[data-theme="light"] .action-btn { color: #8a351a !important; }
-html[data-theme="light"] .profile-card,
-html[data-theme="light"] .profile-avatar,
-html[data-theme="light"] .userItem,
-html[data-theme="light"] .confirm-content,
-html[data-theme="light"] .modal-content,
-html[data-theme="light"] .wrapper,
-html[data-theme="light"] #rantContainer,
-html[data-theme="light"] .popup-content,
-html[data-theme="light"] #mainBox .container {
-  background-color: rgba(255, 255, 255, .88) !important;
-  color: #30231e !important;
-  border-color: rgba(172, 77, 42, .2) !important;
-}
+html:not([data-theme="light"]) body .ember-alert,
+html:not([data-theme="light"]) body .confirm-text,
+html:not([data-theme="light"]) body .info-text,
+html:not([data-theme="light"]) body .info-sub,
+html:not([data-theme="light"]) body .from-label,
+html:not([data-theme="light"]) body .whisper-dear,
+html:not([data-theme="light"]) body .whisper-from,
+html:not([data-theme="light"]) body .comment-author,
+html:not([data-theme="light"]) body .whisper-snippet,
+html:not([data-theme="light"]) body .signup-link,
+html:not([data-theme="light"]) body .login-link,
+html:not([data-theme="light"]) body .email,
+html:not([data-theme="light"]) body .no-comments,
+html:not([data-theme="light"]) body .prompt-text,
+html:not([data-theme="light"]) body .nevermind-link,
+html[data-theme="light"] body .ember-alert,
+html[data-theme="light"] body .confirm-text,
+html[data-theme="light"] body .info-text,
+html[data-theme="light"] body .info-sub,
+html[data-theme="light"] body .from-label,
+html[data-theme="light"] body .whisper-dear,
+html[data-theme="light"] body .whisper-from,
+html[data-theme="light"] body .comment-author,
+html[data-theme="light"] body .whisper-snippet,
+html[data-theme="light"] body .signup-link,
+html[data-theme="light"] body .login-link,
+html[data-theme="light"] body .email,
+html[data-theme="light"] body .no-comments,
+html[data-theme="light"] body .prompt-text,
+html[data-theme="light"] body .nevermind-link { color: var(--app-muted) !important; }
+html:not([data-theme="light"]) body .main-whisper,
+html[data-theme="light"] body .main-whisper,
+html:not([data-theme="light"]) body .comment-item,
+html[data-theme="light"] body .comment-item,
+html:not([data-theme="light"]) body .reaction-btn,
+html[data-theme="light"] body .reaction-btn { background: var(--app-raised) !important; color: var(--app-text) !important; border-color: var(--app-line) !important; }
+html:not([data-theme="light"]) body .profile-card::before,
+html:not([data-theme="light"]) body .whisper-box::before,
+html[data-theme="light"] body .profile-card::before,
+html[data-theme="light"] body .whisper-box::before { background: var(--app-accent) !important; }
+html[data-theme="light"] body .reaction-count { color: var(--app-text) !important; }
+[hidden] { display:none !important; }
+button:disabled { opacity:.55 !important; cursor:not-allowed !important; }
+button:focus-visible, a:focus-visible, [tabindex]:focus-visible { outline:3px solid currentColor; outline-offset:3px; }
+body:has(#rantContainer) .theme-toggle { top:12px; right:12px; bottom:auto; }
+html[data-theme="light"] #netDock { background:rgba(255,255,255,.8); border-color:rgba(0,0,0,.3); }
+body { font-family:'Quicksand',sans-serif; }
+html:not([data-theme="light"]) #voidMode,
+html:not([data-theme="light"]) #splashScreen { background-color:#080808 !important; color:#f5f5f5 !important; }
 html[data-theme="light"] #voidMode,
-html[data-theme="light"] #splashScreen { background: #f5f2ef !important; color: #30231e !important; }
-html[data-theme="light"] .circle { border-color: rgba(190, 82, 48, .35); }
-html[data-theme="light"] .profile-name,
-html[data-theme="light"] .section-title,
-html[data-theme="light"] .username,
-html[data-theme="light"] .page-title { color: #8a351a !important; }
-html[data-theme="light"] .email,
-html[data-theme="light"] .signup-link,
-html[data-theme="light"] .login-link,
-html[data-theme="light"] .confirm-text,
-html[data-theme="light"] .info-text,
-html[data-theme="light"] .comment-text { color: #70615a !important; }
-html[data-theme="light"] .main-whisper { background: #fff5ee !important; color: #30231e !important; border-color: rgba(172, 77, 42, .24) !important; }
-html[data-theme="light"] .reaction-btn { color: #7f351d !important; background: #fff !important; }
-html[data-theme="light"] .reaction-count { color: #30231e !important; }
-html[data-theme="light"] .activity-container { scrollbar-color: #d8a58f transparent; }
-html[data-theme="light"] #netDock { background: rgba(255,255,255,.75); border-color: rgba(110,75,55,.25); }
-@media (max-width: 560px) {
-  .theme-toggle { right: 12px; bottom: 12px; min-height: 40px; padding: 8px 12px; }
-  body:has(#netDock) .theme-toggle { top: 12px; bottom: auto; }
-}
-@media (max-width: 500px) {
-  #navStrip { top: 10px; right: 10px; gap: 5px; }
-  .nav-item { width: 36px; height: 36px; }
-  .user-info { top: 17px; left: 10px; max-width: calc(100% - 185px); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-}
-@media (prefers-reduced-motion: reduce) { .theme-toggle { transition: none; } }
+html[data-theme="light"] #splashScreen { background:#f4f4f4 !important; color:#171717 !important; }
+html[data-theme="light"] #rantContainer,
+html[data-theme="light"] .container,
+html[data-theme="light"] #modalBox,
+html[data-theme="light"] .popup-content,
+html[data-theme="light"] .group-modal { background-color:#fff !important; color:#171717 !important; border-color:#d1d1d1 !important; }
+html[data-theme="light"] .main-whisper,
+html[data-theme="light"] #whisperMessageBox { background:#f0f0f0 !important; color:#171717 !important; border-color:#d1d1d1 !important; }
+html[data-theme="light"] .activity-icon { background:#ededed !important; }
 
-/* Calm, consistent WHISPR palette across legacy and messaging screens */
-:root {
-  --whispr-accent: #91aa9b;
-  --whispr-accent-strong: #a9c1b2;
-  --whispr-ink: #171a18;
-  --whispr-surface: rgba(255, 255, 255, .055);
-  --whispr-line: rgba(181, 199, 187, .18);
+/* Chat controls need explicit contrast after the shared button/input theme rules. */
+html:not([data-theme="light"]) body:has(.chat-shell) .send-btn {
+  background: #fff !important;
+  border-color: #fff !important;
+  color: #080808 !important;
 }
-html:not([data-theme="light"]) body {
-  background-color: #111411 !important;
-  background-image: radial-gradient(ellipse at top, rgba(145, 170, 155, .09), transparent 52%) !important;
-  color: #e8ebe7 !important;
-}
-html:not([data-theme="light"]) .header,
-html:not([data-theme="light"]) .container,
-html:not([data-theme="light"]) .profile-card,
-html:not([data-theme="light"]) .profile-box,
-html:not([data-theme="light"]) .whispers-container,
-html:not([data-theme="light"]) .chat-item,
-html:not([data-theme="light"]) .activity-card,
-html:not([data-theme="light"]) .stat-box,
-html:not([data-theme="light"]) .stat-item,
-html:not([data-theme="light"]) .userItem,
-html:not([data-theme="light"]) .wrapper,
-html:not([data-theme="light"]) #rantContainer,
-html:not([data-theme="light"]) .modal-content,
-html:not([data-theme="light"]) .confirm-content,
-html:not([data-theme="light"]) #modalBox {
-  background-color: rgba(29, 34, 30, .94) !important;
-  border-color: var(--whispr-line) !important;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, .16) !important;
-}
-html:not([data-theme="light"]) .page-title,
-html:not([data-theme="light"]) .section-title,
-html:not([data-theme="light"]) .stat-num,
-html:not([data-theme="light"]) .username,
-html:not([data-theme="light"]) .modal-title,
-html:not([data-theme="light"]) .confirm-title,
-html:not([data-theme="light"]) .profile-name,
-html:not([data-theme="light"]) .profile-username,
-html:not([data-theme="light"]) .follower-name,
-html:not([data-theme="light"]) .comments-title {
-  color: var(--whispr-accent-strong) !important;
-}
-html:not([data-theme="light"]) .back-btn,
-html:not([data-theme="light"]) .backBtn,
-html:not([data-theme="light"]) #returnBtn,
-html:not([data-theme="light"]) .back-home,
-html:not([data-theme="light"]) .nav-btn,
-html:not([data-theme="light"]) .edit-btn,
-html:not([data-theme="light"]) .action-btn.secondary,
-html:not([data-theme="light"]) .confirm-btn,
-html:not([data-theme="light"]) .go-btn,
-html:not([data-theme="light"]) .btn {
-  color: var(--whispr-accent-strong) !important;
-  border-color: var(--whispr-line) !important;
-}
-html:not([data-theme="light"]) .submit-btn,
-html:not([data-theme="light"]) .comment-submit,
-html:not([data-theme="light"]) .primary-btn,
-html:not([data-theme="light"]) #searchBtn,
-html:not([data-theme="light"]) #loginBtn,
-html:not([data-theme="light"]) #signupBtn,
-html:not([data-theme="light"]) .action-btn:not(.secondary),
-html:not([data-theme="light"]) .confirm-btn.danger {
-  background: var(--whispr-accent) !important;
-  border-color: var(--whispr-accent) !important;
-  color: var(--whispr-ink) !important;
-  box-shadow: none !important;
-}
-html:not([data-theme="light"]) input,
-html:not([data-theme="light"]) textarea,
-html:not([data-theme="light"]) #searchInput,
-html:not([data-theme="light"]) .comment-input,
-html:not([data-theme="light"]) #msgInput {
-  border-color: var(--whispr-line) !important;
-}
-html:not([data-theme="light"]) input:focus,
-html:not([data-theme="light"]) textarea:focus {
-  border-color: var(--whispr-accent) !important;
-  box-shadow: 0 0 0 3px rgba(145, 170, 155, .14) !important;
-}
-html:not([data-theme="light"]) .whisper-box,
-html:not([data-theme="light"]) .main-whisper,
-html:not([data-theme="light"]) .comment-item,
-html:not([data-theme="light"]) .reaction-btn {
-  border-color: var(--whispr-line) !important;
-  box-shadow: none !important;
-}
-html:not([data-theme="light"]) .whisper-box::before,
-html:not([data-theme="light"]) .profile-card::before {
-  background: linear-gradient(90deg, transparent, var(--whispr-accent), transparent) !important;
-}
-html:not([data-theme="light"]) .whisper-box::before {
-  background: var(--whispr-accent) !important;
-}
-html:not([data-theme="light"]) .main-whisper,
-html:not([data-theme="light"]) .reaction-btn,
-html:not([data-theme="light"]) .comment-item {
-  background-color: rgba(145, 170, 155, .07) !important;
-}
-html[data-theme="light"] {
-  --whispr-accent: #648575;
-  --whispr-accent-strong: #426755;
-  --whispr-line: rgba(75, 112, 91, .2);
-}
-html[data-theme="light"] .whisper-box::before { background: var(--whispr-accent) !important; }
-html[data-theme="light"] .profile-card::before { background: linear-gradient(90deg, transparent, var(--whispr-accent), transparent) !important; }
-html[data-theme="light"] .page-title,
-html[data-theme="light"] .section-title,
-html[data-theme="light"] .stat-num,
-html[data-theme="light"] .profile-name,
-html[data-theme="light"] .username,
-html[data-theme="light"] .modal-title,
-html[data-theme="light"] .confirm-title {
-  color: var(--whispr-accent-strong) !important;
-}
-html[data-theme="light"] .submit-btn,
-html[data-theme="light"] .comment-submit,
-html[data-theme="light"] .primary-btn,
-html[data-theme="light"] #searchBtn,
-html[data-theme="light"] #loginBtn,
-html[data-theme="light"] #signupBtn,
-html[data-theme="light"] .action-btn:not(.secondary),
-html[data-theme="light"] .confirm-btn.danger {
-  background: var(--whispr-accent) !important;
-  border-color: var(--whispr-accent) !important;
+html[data-theme="light"] body:has(.chat-shell) .send-btn {
+  background: #171717 !important;
+  border-color: #171717 !important;
   color: #fff !important;
-  box-shadow: none !important;
 }
-html[data-theme="light"] .back-btn,
-html[data-theme="light"] .backBtn,
-html[data-theme="light"] #returnBtn,
-html[data-theme="light"] .back-home,
-html[data-theme="light"] .nav-btn,
-html[data-theme="light"] .edit-btn,
-html[data-theme="light"] .action-btn.secondary,
-html[data-theme="light"] .confirm-btn,
-html[data-theme="light"] .go-btn,
-html[data-theme="light"] .btn {
-  color: var(--whispr-accent-strong) !important;
-  border-color: var(--whispr-line) !important;
+html:not([data-theme="light"]) body:has(.chat-shell) .send-box input {
+  background: #080808 !important;
+  border-color: #555 !important;
+  color: #f5f5f5 !important;
 }
-
-@media (max-width: 560px) {
-  .theme-toggle { right: 12px; bottom: 12px; }
-  .header { padding-left: 12px; padding-right: 12px; }
+html[data-theme="light"] body:has(.chat-shell) .send-box input {
+  background: #fff !important;
+  border-color: #888 !important;
+  color: #171717 !important;
+}
+body:has(.chat-shell) .call-card {
+  background: var(--app-surface) !important;
+  color: var(--app-text) !important;
+  border-color: var(--app-line) !important;
 }
