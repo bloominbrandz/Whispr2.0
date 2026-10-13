@@ -37,7 +37,7 @@ html:not([data-theme="light"]) body .theme-choice[aria-pressed="true"],html[data
 <header class="settings-header">
   <button type="button" id="backBtn" aria-label="Go back">← Back</button>
   <h1>WHISPR · Settings</h1>
-  <a href="enter.html" aria-label="WHISPR home">Home</a>
+  <a href="enter/index.html" aria-label="WHISPR home">Home</a>
 </header>
 <main class="settings-main">
   <p class="intro">Your account, appearance, and WHISPR shortcuts—all in one place.</p>
@@ -45,8 +45,8 @@ html:not([data-theme="light"]) body .theme-choice[aria-pressed="true"],html[data
     <h2 id="accountTitle">Account &amp; profile</h2>
     <p>Edit your public profile, account details, or password.</p>
     <div class="settings-links">
-      <a class="settings-link" href="profile.html"><span>View profile</span><span aria-hidden="true">›</span></a>
-      <a class="settings-link" href="edit-profile.html"><span>Edit profile &amp; account</span><span aria-hidden="true">›</span></a>
+      <a class="settings-link" href="profile/index.html"><span>View profile</span><span aria-hidden="true">›</span></a>
+      <a class="settings-link" href="edit-profile/index.html"><span>Edit profile &amp; account</span><span aria-hidden="true">›</span></a>
     </div>
   </section>
   <section class="settings-card" aria-labelledby="appearanceTitle">
@@ -61,9 +61,9 @@ html:not([data-theme="light"]) body .theme-choice[aria-pressed="true"],html[data
     <h2 id="shortcutsTitle">WHISPR</h2>
     <p>Quick access to your conversations and activity.</p>
     <div class="settings-links">
-      <a class="settings-link" href="message.html"><span>Messages &amp; group chats</span><span aria-hidden="true">›</span></a>
-      <a class="settings-link" href="search.html"><span>Find people</span><span aria-hidden="true">›</span></a>
-      <a class="settings-link" href="notifications.html"><span>Notifications</span><span aria-hidden="true">›</span></a>
+      <a class="settings-link" href="message/index.html"><span>Messages &amp; group chats</span><span aria-hidden="true">›</span></a>
+      <a class="settings-link" href="search/index.html"><span>Find people</span><span aria-hidden="true">›</span></a>
+      <a class="settings-link" href="notifications/index.html"><span>Notifications</span><span aria-hidden="true">›</span></a>
     </div>
   </section>
   <section class="settings-card" aria-labelledby="sessionTitle">
@@ -79,8 +79,8 @@ import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/fi
 const firebaseConfig={apiKey:"AIzaSyBSmm2lC7iAMmQJqsG_jXi4DWpL7ghcJnc",authDomain:"whispr-92fc0.firebaseapp.com",projectId:"whispr-92fc0",storageBucket:"whispr-92fc0.firebasestorage.app",messagingSenderId:"133594748424",appId:"1:133594748424:web:7dc7ff44e105d2d5cee3bd"};
 const auth=getAuth(initializeApp(firebaseConfig));
 const status=document.getElementById("status");
-onAuthStateChanged(auth,user=>{if(!user)location.assign("login.html");});
-document.getElementById("backBtn").addEventListener("click",()=>window.whisprBack("enter.html"));
+onAuthStateChanged(auth,user=>{if(!user)location.assign("login/index.html");});
+document.getElementById("backBtn").addEventListener("click",()=>window.whisprBack("enter/index.html"));
 function syncTheme(theme){
   document.documentElement.dataset.theme=theme;
   try{localStorage.setItem("whispr-theme",theme);}catch(_){}
@@ -93,7 +93,7 @@ let savedTheme="dark";try{savedTheme=localStorage.getItem("whispr-theme")||"dark
 syncTheme(savedTheme==="light"?"light":"dark");
 document.getElementById("logoutBtn").addEventListener("click",async()=>{
   const button=document.getElementById("logoutBtn");button.disabled=true;status.textContent="Signing out…";
-  try{await signOut(auth);location.assign("login.html");}
+  try{await signOut(auth);location.assign("login/index.html");}
   catch(error){console.error("Could not sign out",error);status.textContent="Could not sign out. Please try again.";button.disabled=false;}
 });
 </script>
