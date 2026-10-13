@@ -15,14 +15,20 @@ body, html {
     margin: 0;
     padding: 0;
     width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    min-height: 100%;
     background: #050200;
     font-family: 'Shadows Into Light', cursive;
     color: #ffca99;
-    overflow: hidden;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding: 100px 20px 90px;
 }
 
 /* Top nav strip - Unified with orange accents */
@@ -58,18 +64,75 @@ body, html {
     box-shadow: 0 4px 12px rgba(255,69,0,0.3);
 }
 
-/* Splash container - Centered with proper spacing */
+/* Mode selection and logo */
 .splash-container {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 15px;
+    width: min(100%, 560px);
+    margin: auto;
 }
 
-.splash-container img {
-    width: 180px;
-    filter: drop-shadow(0 0 20px #ffaa00);
-    margin-bottom: 30px;
+.brand-link {
+    display: grid;
+    place-items: center;
+    width: 250px;
+    min-height: 190px;
+    margin-bottom: 4px;
+    border-radius: 24px;
+    text-decoration: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.brand-link:focus-visible {
+    outline: 3px solid #91aa9b;
+    outline-offset: 3px;
+}
+
+.splash-container .brand-link img {
+    display: block;
+    width: 225px;
+    max-width: 100%;
+    height: auto;
+    filter: drop-shadow(0 10px 24px rgba(145, 170, 155, .3));
+    transition: transform .2s ease;
+}
+
+.brand-link:hover img { transform: scale(1.04); }
+
+.mode-card {
+    width: 100%;
+    padding: 18px 22px;
+    border: 1px solid rgba(181, 199, 187, .2);
+    border-radius: 18px;
+    background: rgba(255, 255, 255, .045);
+    text-align: center;
+}
+
+.mode-card h2 {
+    margin: 0 0 5px;
+    color: #a9c1b2;
+    font-size: 1.45rem;
+    letter-spacing: .04em;
+}
+
+.mode-card p {
+    margin: 0;
+    color: rgba(232, 235, 231, .78);
+    font: 400 .9rem/1.55 'Quicksand', sans-serif;
+}
+
+.privacy-note {
+    width: 100%;
+    margin: 0;
+    padding: 12px 16px;
+    border-left: 3px solid #91aa9b;
+    border-radius: 8px 14px 14px 8px;
+    background: rgba(145, 170, 155, .09);
+    color: rgba(232, 235, 231, .78);
+    font: 400 .78rem/1.5 'Quicksand', sans-serif;
+    text-align: left;
 }
 
 /* Unified button styling matching whisper theme */
@@ -138,6 +201,29 @@ body, html {
     z-index: 10000;
 }
 
+html[data-theme="light"] .mode-card {
+    background: rgba(255, 255, 255, .72);
+    border-color: rgba(75, 112, 91, .2);
+}
+
+html[data-theme="light"] .mode-card h2 { color: #426755; }
+html[data-theme="light"] .mode-card p,
+html[data-theme="light"] .privacy-note { color: #514d48; }
+html[data-theme="light"] .privacy-note { background: rgba(100, 133, 117, .1); }
+
+@media (max-width: 520px) {
+    body { padding: 82px 14px 84px; }
+    .splash-container { gap: 12px; }
+    .brand-link { width: 210px; min-height: 150px; }
+    .splash-container .brand-link img { width: 185px; }
+    .mode-card { padding: 15px 16px; }
+    .mode-card p { font-size: .84rem; }
+    .go-btn { width: min(100%, 260px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .splash-container .brand-link img { transition: none; }
+}
 
 </style>
 <link rel="stylesheet" href="theme.css">
@@ -155,8 +241,21 @@ body, html {
 </div>
 
 <div class="splash-container">
-    <img src="https://i.imgur.com/7vlpCCX.png" alt="Whispers Logo">
+    <a class="brand-link" href="enter.html" aria-label="WHISPR home" title="WHISPR home">
+        <img src="https://i.imgur.com/7vlpCCX.png" alt="WHISPR">
+    </a>
+
+    <section class="mode-card" aria-labelledby="breatheTitle">
+        <h2 id="breatheTitle">Breathe</h2>
+        <p>A quiet space to slow down and let the thoughts you haven’t said out loud rise and pass. Take a breath, put feelings into words, and release them without needing to make them perfect.</p>
+    </section>
+    <p class="privacy-note"><strong>A note about privacy:</strong> Breathe thoughts are not saved or encrypted—they’re simply sent into the void. Please don’t include personal or sensitive information.</p>
     <button class="go-btn" onclick="goToPage('breathe.html')">BREATHE</button>
+
+    <section class="mode-card" aria-labelledby="whisperTitle">
+        <h2 id="whisperTitle">Whisper</h2>
+        <p>Send a random thought into a shared space. Passersby can catch it, read it, and leave a reaction or an echo of their own.</p>
+    </section>
     <button class="go-btn" onclick="goToPage('whisper.html')">WHISPER</button>
 </div>
 
