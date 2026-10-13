@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Whispers | Ethereal Glow</title>
+    <title>Passerby | WHISPR</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Shadows+Into+Light&family=Quicksand:wght@300;500&display=swap');
 
@@ -109,10 +109,11 @@
         #popupOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); z-index: 500; display: none; align-items: center; justify-content: center; padding: 40px; text-align: center; font-size: 1.8rem; color: #ffca99; }
         .info-sub { font-family: 'Quicksand'; font-size: 0.75rem; opacity: 0.4; letter-spacing: 0.5px; }
     </style>
+<link rel="stylesheet" href="theme.css">
 </head>
 <body>
 
-    <button class="back-home" id="backBtn" onclick="location.reload()">Return</button>
+    <button class="back-home" id="backBtn" onclick="window.whisprBack('index.html')">Return</button>
 
     <div id="splashScreen">
         <img src="https://i.imgur.com/7vlpCCX.png" class="splash-logo">
@@ -286,5 +287,6 @@
         function openRelease() { wrapper.classList.add('active'); intro.style.opacity = '0'; }
         function closeRelease() { wrapper.classList.remove('active'); intro.style.opacity = '1'; }
     </script>
+<script src="theme.js" defer></script>
 </body>
 </html>
