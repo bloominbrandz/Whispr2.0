@@ -37,6 +37,8 @@ let candidateUnsubscribes = [];
 let incomingUnsubscribe = null;
 let blocked = false;
 let messagesUnsubscribe = null;
+let initialMessagesLoaded = false;
+let sendingMessage = false;
 
 function setNotice(text) { notice.textContent = text || ""; }
 function getName(data, user) { return data?.username || data?.displayName || user?.displayName || user?.email || "Anonymous"; }
@@ -145,8 +147,21 @@ async function initChat() {
 
 function loadMessages() {
   if (messagesUnsubscribe) messagesUnsubscribe();
+  initialMessagesLoaded = false;
   const q = query(collection(db, "messages", conversationId, "chat"), orderBy("time"));
+
   messagesUnsubscribe = onSnapshot(q, snapshot => {
+    const wasNearBottom = messagesEl.scrollHeight - messagesEl.scrollTop - messagesEl.clientHeight < 120;
+    const shouldScrollToBottom = !initialMessagesLoaded || wasNearBottom;
+    if (initialMessagesLoaded) {
+      snapshot.docChanges().forEach(change => {
+        const message = change.doc.data();
+        if (change.type === "added" && message.senderId !== currentUser.uid) {
+          window.whisprNotify?.("New message", `${message.senderName || "Someone"}: ${message.text || "Sent you a message."}`, { tag: `message-${change.doc.id}` });
+        }
+      });
+    }
+    initialMessagesLoaded = true;
     messagesEl.replaceChildren();
     if (snapshot.empty) {
       showEmpty("This is the beginning of your conversation.");
@@ -176,7 +191,7 @@ function loadMessages() {
       }
       messagesEl.appendChild(bubble);
     });
-    messagesEl.scrollTop = messagesEl.scrollHeight;
+    if (shouldScrollToBottom) messagesEl.scrollTop = messagesEl.scrollHeight;
   }, error => {
     console.error("Could not load messages", error);
     setNotice("Could not load messages. Check your access permissions.");
@@ -187,9 +202,11 @@ function loadMessages() {
 document.getElementById("sendForm").addEventListener("submit", async event => {
   event.preventDefault();
   const text = input.value.trim();
-  if (!text || !canUseMessaging()) return;
+  if (!text || !canUseMessaging() || sendingMessage) return;
   const sendBtn = document.getElementById("sendBtn");
+  sendingMessage = true;
   sendBtn.disabled = true;
+  let messageSaved = false;
   try {
     await addDoc(collection(db, "messages", conversationId, "chat"), {
       text,
@@ -197,6 +214,8 @@ document.getElementById("sendForm").addEventListener("submit", async event => {
       senderName: currentName,
       time: serverTimestamp()
     });
+    messageSaved = true;
+    input.value = "";
     const recipientIds = members.filter(uid => uid !== currentUser.uid);
     const updates = [setDoc(doc(db, "userChats", currentUser.uid), {
       [conversationId]: {
@@ -214,12 +233,14 @@ document.getElementById("sendForm").addEventListener("submit", async event => {
       updates.push(setDoc(doc(db, "userChats", uid), { [conversationId]: chatEntry }, { merge: true }));
     }
     await Promise.all(updates);
-    input.value = "";
     setNotice("");
   } catch (error) {
-    console.error("Could not send message", error);
-    setNotice("Message not sent. Please try again.");
+    console.error(messageSaved ? "Message sent but chat preview could not update" : "Could not send message", error);
+    setNotice(messageSaved
+      ? "Message sent, but the conversation preview could not be updated."
+      : "Message not sent. Please try again.");
   } finally {
+    sendingMessage = false;
     updateComposer();
   }
 });
@@ -230,7 +251,10 @@ blockBtn.addEventListener("click", async () => {
   const blockedList = mine.exists() ? (mine.data().blockedUsers || []) : [];
   const isBlockedByMe = blockedList.includes(otherUid);
   const confirmText = isBlockedByMe ? "Unblock this person?" : "Block this person? They will no longer be able to message you.";
-  if (!window.confirm(confirmText)) return;
+  const confirmed = window.whisprConfirm
+    ? await window.whisprConfirm(confirmText, { title: isBlockedByMe ? "Unblock person" : "Block person", confirmText: isBlockedByMe ? "Unblock" : "Block", danger: !isBlockedByMe })
+    : window.confirm(confirmText);
+  if (!confirmed) return;
   try {
     await updateDoc(doc(db, "users", currentUser.uid), { blockedUsers: isBlockedByMe ? arrayRemove(otherUid) : arrayUnion(otherUid) });
     await checkBlockStatus();
@@ -367,6 +391,7 @@ function listenForCalls() {
     if (!incoming) return;
     activeCallId = incoming.id;
     const data = incoming.data();
+    window.whisprNotify?.("Incoming voice call", `${document.getElementById("chatName").textContent} is calling.`, { tag: `call-${incoming.id}` });
     callOverlay.hidden = false;
     document.getElementById("callTitle").textContent = "Incoming voice call";
     callStatus.textContent = `${document.getElementById("chatName").textContent} is calling…`;
@@ -401,6 +426,13 @@ onAuthStateChanged(auth, async user => {
           )
         );
         if (existingChat) conversationId = existingChat[1].conversationId || existingChat[0];
+      }
+    }
+    if (conversationId) {
+      try {
+        await setDoc(doc(db, "userChats", user.uid), { [conversationId]: { unreadCount: 0 } }, { merge: true });
+      } catch (error) {
+        console.warn("Could not clear unread count", error);
       }
     }
     const userSnap = await getDoc(doc(db, "users", user.uid));
