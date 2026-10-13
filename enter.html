@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Whispers | Choose Mode</title>
+<title>WHISPR | Choose Mode</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Shadows+Into+Light&family=Quicksand:wght@300;500&display=swap" rel="stylesheet">
 
@@ -140,16 +140,17 @@ body, html {
 
 
 </style>
+<link rel="stylesheet" href="theme.css">
 </head>
 <body>
 
 <div class="user-info" id="userInfo">Loading...</div>
 
 <div id="navStrip">
-    <div class="nav-item" onclick="goToPage('search.html')" title="Search">🔍</div>
-    <div class="nav-item" onclick="goToPage('notifications.html')" title="Notifications">🔔</div>
-    <div class="nav-item" onclick="goToPage('message.html')" title="Messages">✉️</div>
-    <div class="nav-item" onclick="goToPage('profile.html')" title="Profile">👤</div>
+    <button class="nav-item" type="button" onclick="goToPage('search.html')" title="Search" aria-label="Search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"></circle><path d="m16 16 5 5"></path></svg></button>
+    <button class="nav-item" type="button" onclick="goToPage('notifications.html')" title="Notifications" aria-label="Notifications"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"></path></svg></button>
+    <button class="nav-item" type="button" onclick="goToPage('message.html')" title="Messages" aria-label="Messages"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v12H9l-5 4z"></path><path d="M8 10h8M8 13h5"></path></svg></button>
+    <button class="nav-item" type="button" onclick="goToPage('profile.html')" title="Profile" aria-label="Profile"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4 21a8 8 0 0 1 16 0"></path></svg></button>
     
 </div>
 
@@ -222,5 +223,6 @@ onAuthStateChanged(auth, async user => {
     }
 });
 </script>
+<script src="theme.js" defer></script>
 </body>
 </html>
