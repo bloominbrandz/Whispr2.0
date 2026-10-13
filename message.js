@@ -77,11 +77,47 @@ function makeChatItem(chat) {
   const deleteButton = document.createElement("button");
   deleteButton.type = "button";
   deleteButton.className = "delete-chat-btn";
-  deleteButton.textContent = "Delete";
-  deleteButton.setAttribute("aria-label", `Delete conversation with ${title}`);
+  deleteButton.textContent = "Remove";
+  deleteButton.setAttribute("aria-label", `Remove conversation with ${title}`);
+  deleteButton.hidden = true;
+  const revealDelete = () => {
+    deleteButton.hidden = false;
+    deleteButton.focus();
+    statusMessage.textContent = `Remove option revealed for ${title}.`;
+  };
+  let holdTimer = null;
+  let holdTriggered = false;
+  let suppressOpen = false;
+  item.addEventListener("pointerdown", event => {
+    if (event.target.closest("a, button")) return;
+    holdTriggered = false;
+    holdTimer = setTimeout(() => {
+      holdTriggered = true;
+      suppressOpen = true;
+      revealDelete();
+    }, 650);
+  });
+  const cancelHold = () => {
+    clearTimeout(holdTimer);
+    holdTimer = null;
+    if (holdTriggered) setTimeout(() => { suppressOpen = false; }, 800);
+  };
+  item.addEventListener("pointerup", cancelHold);
+  item.addEventListener("pointerleave", cancelHold);
+  item.addEventListener("pointercancel", cancelHold);
+  item.addEventListener("contextmenu", event => {
+    event.preventDefault();
+    revealDelete();
+  });
+  item.addEventListener("keydown", event => {
+    if (event.shiftKey && event.key === "Delete") {
+      event.preventDefault();
+      revealDelete();
+    }
+  });
   deleteButton.addEventListener("click", async event => {
     event.stopPropagation();
-    if (!activeUser || !window.confirm("Remove this conversation from your messages? It will not delete the messages or remove it for other people.")) return;
+    if (!activeUser || !await window.whisprConfirm("Remove this conversation from your messages? The messages remain available to other members.", { title: "Remove conversation", confirmText: "Remove", danger: true })) return;
     deleteButton.disabled = true;
     try {
       await updateDoc(doc(db, "userChats", activeUser.uid), new FieldPath(chat.conversationId), deleteField());
@@ -93,7 +129,15 @@ function makeChatItem(chat) {
     }
   });
   item.append(avatar, info, deleteButton);
-  item.addEventListener("click", openChat);
+  item.addEventListener("click", event => {
+    if (suppressOpen) {
+      event.preventDefault();
+      event.stopPropagation();
+      suppressOpen = false;
+      return;
+    }
+    if (!event.target.closest("button, a")) openChat();
+  });
   item.addEventListener("keydown", event => {
     if (event.target.closest("a, button")) return;
     if (event.key === "Enter" || event.key === " ") { event.preventDefault(); openChat(); }
@@ -211,17 +255,7 @@ searchInput.addEventListener("input", () => {
   renderChats();
   searchPeople(searchInput.value.trim());
 });
-document.getElementById("backBtn").addEventListener("click", () => {
-  try {
-    const previous = new URL(document.referrer);
-    const page = previous.pathname.split("/").pop().toLowerCase();
-    if (previous.origin === location.origin && history.length > 1 && !["index.html", "login.html", "signup.html"].includes(page)) {
-      history.back();
-      return;
-    }
-  } catch (_) {}
-  location.assign("enter.html");
-});
+document.getElementById("backBtn").addEventListener("click", () => window.whisprBack("enter.html"));
 document.getElementById("groupBtn").addEventListener("click", () => {
   groupModal.hidden = false;
   document.getElementById("groupName").focus();
