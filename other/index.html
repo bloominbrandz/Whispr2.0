@@ -110,7 +110,7 @@ body, html { margin: 0; padding: 0; width: 100%; min-height: 100%; background: #
 </head>
 <body>
 <div class="header">
-    <button class="back-btn" onclick="window.whisprBack('message.html')">← Back</button>
+    <button class="back-btn" onclick="window.whisprBack('message/index.html')">← Back</button>
     <div class="page-title">Profile</div>
     <div style="width: 80px;"></div>
 </div>
@@ -395,7 +395,7 @@ function setupWhisperListener(whisperId, currentUserId) {
             const safeName = escapeHtml(comment.from || 'Anonymous');
             
             commentEl.innerHTML = `
-                <div class="comment-author" onclick="window.location.href='other.html?uid=${safeUid}'">${safeName} ${time ? `• ${time}` : ''}</div>
+                <div class="comment-author" onclick="window.location.href='other/index.html?uid=${safeUid}'">${safeName} ${time ? `• ${time}` : ''}</div>
                 <div class="comment-text">${escapeHtml(comment.text)}</div>
             `;
             commentsList.appendChild(commentEl);
@@ -490,7 +490,7 @@ window.showFollowersModal = async function(type) {
 function addFollowerToList(list, uid, name) {
     const item = document.createElement('div');
     item.className = 'follower-item';
-    item.onclick = () => window.location.href = `other.html?uid=${uid}`;
+    item.onclick = () => window.location.href = `other/index.html?uid=${uid}`;
     item.innerHTML = `
         <div class="follower-avatar">${name.charAt(0).toUpperCase()}</div>
         <div class="follower-name">${escapeHtml(name)}</div>
@@ -540,7 +540,7 @@ async function loadProfile() {
         if (!isOwnProfile) {
             actionButtonsHtml = `
                 <div class="action-buttons">
-                    <a href="chat.html?uid=${encodeURIComponent(profileUserId)}&name=${encodeURIComponent(displayName)}" target="_self" class="action-btn">
+                    <a href="chat/index.html?uid=${encodeURIComponent(profileUserId)}&name=${encodeURIComponent(displayName)}" target="_self" class="action-btn">
                         ✉️ Message
                     </a>
                     <button class="action-btn secondary ${isFollowing ? 'following' : ''}" id="followBtn" onclick="toggleFollow()">
