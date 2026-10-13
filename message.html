@@ -15,10 +15,17 @@
   <div class="header-actions"><button class="nav-btn" id="groupBtn" type="button">＋ Group</button><a class="nav-btn" href="search.html">＋ Find</a></div>
 </header>
 <main class="main-content">
-  <label class="search-label" for="searchInput">Find a conversation</label>
-  <input type="search" id="searchInput" placeholder="Search conversations..." autocomplete="off">
+  <label class="search-label" for="searchInput">Find people or conversations</label>
+  <input type="search" id="searchInput" placeholder="Username, email, or conversation..." autocomplete="off">
   <p id="statusMessage" class="status-message" role="status"></p>
-  <section class="results" id="results" aria-live="polite"><div class="empty-state">Loading conversations…</div></section>
+  <section class="people-section" id="peopleSection" hidden aria-label="People matching your search">
+    <h2 class="section-heading">People</h2>
+    <div class="results" id="peopleResults" aria-live="polite"></div>
+  </section>
+  <section class="conversation-section" aria-label="Your conversations">
+    <h2 class="section-heading" id="conversationHeading">Conversations</h2>
+    <section class="results" id="results" aria-live="polite"><div class="empty-state">Loading conversations…</div></section>
+  </section>
 </main>
 <div class="modal-backdrop" id="groupModal" hidden>
   <form class="group-modal" id="groupForm">
