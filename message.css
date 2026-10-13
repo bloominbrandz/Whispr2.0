@@ -52,3 +52,8 @@ html[data-theme="light"] .primary-btn{color:#fff}
 html[data-theme="light"] .avatar-link{background:#e3e9e0;color:#455346}
 @media(max-width:560px){.header{min-height:66px;grid-template-columns:auto 1fr auto;padding:9px 12px;gap:7px}.brand{justify-self:center;font-size:.92rem;gap:6px}.brand img{width:34px;height:34px}.nav-btn{padding:8px 10px;font-size:.8rem}.header-actions{gap:5px}.main-content{padding:25px 13px 70px}.chat-item{min-height:76px;padding:12px}.avatar-link{flex-basis:44px;width:44px;height:44px}.group-modal{padding:26px 20px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important}}
+.hold-hint{margin:12px 2px 0;color:var(--muted);font-size:.78rem;line-height:1.5}
+.delete-chat-btn[hidden]{display:none!important}
+.delete-chat-btn{min-height:40px;border-color:#777;color:var(--text);background:transparent}
+.delete-chat-btn:hover{background:var(--surface-raised);border-color:var(--text)}
+@media(max-width:420px){.chat-item{gap:9px}.delete-chat-btn{padding:7px 9px;font-size:.72rem}}
