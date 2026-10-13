@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Whispers | Profile</title>
+<title>Profile | WHISPR</title>
 <link href="https://fonts.googleapis.com/css2?family=Shadows+Into+Light&family=Quicksand:wght@300;500&display=swap" rel="stylesheet">
 <style>
 * { box-sizing: border-box; }
@@ -106,10 +106,11 @@ body, html { margin: 0; padding: 0; width: 100%; min-height: 100%; background: #
 
 </style>
 <base target="_blank">
+<link rel="stylesheet" href="theme.css">
 </head>
 <body>
 <div class="header">
-    <button class="back-btn" onclick="window.history.back()">← Back</button>
+    <button class="back-btn" onclick="window.whisprBack('message.html')">← Back</button>
     <div class="page-title">Profile</div>
     <div style="width: 80px;"></div>
 </div>
@@ -513,7 +514,7 @@ async function loadProfile() {
         if (!isOwnProfile) {
             actionButtonsHtml = `
                 <div class="action-buttons">
-                    <a href="chat.html?uid=${profileUserId}&name=${encodeURIComponent(displayName)}" class="action-btn">
+                    <a href="chat.html?uid=${encodeURIComponent(profileUserId)}&name=${encodeURIComponent(displayName)}" target="_self" class="action-btn">
                         ✉️ Message
                     </a>
                     <button class="action-btn secondary ${isFollowing ? 'following' : ''}" id="followBtn" onclick="toggleFollow()">
@@ -660,5 +661,6 @@ onAuthStateChanged(auth, user => {
     loadProfile();
 });
 </script>
+<script src="theme.js" defer></script>
 </body>
 </html>
