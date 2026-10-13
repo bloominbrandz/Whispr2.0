@@ -781,14 +781,14 @@ window.viewProfile = function(uid) {
     
     // Check if it's the current logged-in user
     if(uid === currentUserId) {
-        window.location.href = 'profile.html';
+        window.location.href = 'profile/index.html';
     } else {
-        window.location.href = `other.html?uid=${uid}`;
+        window.location.href = `other/index.html?uid=${uid}`;
     }
 };
 
 // Event Listeners
-document.getElementById('returnBtn').addEventListener('click', () => window.whisprBack('enter.html'));
+document.getElementById('returnBtn').addEventListener('click', () => window.whisprBack('enter/index.html'));
 
 document.getElementById('releasePrompt').addEventListener('click', openRelease);
 document.getElementById('nevermindLink').addEventListener('click', closeRelease);
@@ -837,7 +837,7 @@ async function getUsername(uid) {
 // Auth state listener
 onAuthStateChanged(auth, async user => {
     if(!user) {
-        window.location.href = "login.html";
+        window.location.href = "login/index.html";
         return;
     }
     
