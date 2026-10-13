@@ -3,129 +3,173 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WHISPR | Home</title>
-<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="theme.css">
+<title>Welcome | WHISPR</title>
 <style>
-:root{--home-bg:#0b0c0e;--home-panel:#141619;--home-panel-soft:#191c20;--home-text:#f3f4f5;--home-muted:#a6abb2;--home-line:#30343a;--home-accent:#d7dadd}
-html[data-theme="light"]{--home-bg:#f1f2f3;--home-panel:#fff;--home-panel-soft:#f7f7f8;--home-text:#191b1e;--home-muted:#636970;--home-line:#d9dcdf;--home-accent:#222}
-*{box-sizing:border-box}
-html,body{margin:0;min-height:100%;background:var(--home-bg);color:var(--home-text);font-family:'Quicksand',sans-serif}
-body{min-height:100vh;min-height:100dvh;background:var(--home-bg)!important;background-image:none!important;padding:0 0 0 248px;overflow-x:hidden}
-/* The home navigation is the persistent social-style sidebar. */
-#navStrip{position:fixed;inset:0 auto 0 0;z-index:20;width:228px;display:flex;flex-direction:column;align-items:stretch;gap:7px;padding:18px 14px;border-right:1px solid var(--home-line);background:var(--home-panel)}
-.user-card{display:flex;flex-direction:column;align-items:flex-start;gap:12px;margin:0 0 20px;padding:5px 7px 20px;border-bottom:1px solid var(--home-line)}
-.avatar{width:52px;height:52px;display:grid;place-items:center;overflow:hidden;border:1px solid var(--home-line);border-radius:50%;background:var(--home-panel-soft);color:var(--home-text);font-size:1.1rem;font-weight:700}
-.avatar img{width:100%;height:100%;object-fit:cover}
-#userInfo{max-width:100%;overflow:hidden;color:var(--home-text);font-size:.92rem;font-weight:700;text-overflow:ellipsis;white-space:nowrap}
-.nav-item{width:100%;min-height:46px;display:flex;align-items:center;justify-content:flex-start;gap:14px;padding:0 12px;border:1px solid transparent;border-radius:12px;background:transparent;color:var(--home-muted);font:600 .9rem 'Quicksand',sans-serif;text-align:left;text-decoration:none;cursor:pointer;transition:background .18s ease,color .18s ease,border-color .18s ease}
-.nav-item svg{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
-.nav-item:hover,.nav-item:focus-visible{background:var(--home-panel-soft);border-color:var(--home-line);color:var(--home-text)}
-body:has(#navStrip) .theme-toggle{display:none!important}
-.home-main{width:min(100%,1050px);margin:0 auto;padding:30px clamp(20px,4vw,54px) 48px}
-.home-topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:32px;padding-bottom:17px;border-bottom:1px solid var(--home-line)}
-.brand{display:flex;align-items:center;gap:11px;color:var(--home-text);font-size:1.15rem;font-weight:700;letter-spacing:.12em;text-decoration:none}
-.brand-mark{width:34px;height:34px;display:grid;place-items:center;border:1px solid var(--home-line);border-radius:12px;background:var(--home-panel);font-size:.95rem;letter-spacing:0}
-.topbar-note{color:var(--home-muted);font-size:.82rem}
-.welcome{margin:0 0 7px;font-size:clamp(1.5rem,3vw,2rem);letter-spacing:-.03em}
-.subtitle{margin:0 0 26px;color:var(--home-muted);font-size:.95rem;line-height:1.6}
-.mode-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:stretch;gap:16px}
-.mode-card{display:flex;flex-direction:column;align-items:flex-start;min-height:254px;padding:23px;border:1px solid var(--home-line);border-radius:18px;background:var(--home-panel);text-align:left}
-.mode-kicker{margin:0 0 20px;color:var(--home-muted);font-size:.72rem;font-weight:700;letter-spacing:.13em;text-transform:uppercase}
-.mode-card h2{margin:0 0 9px;color:var(--home-text);font-size:1.3rem;letter-spacing:-.02em}
-.mode-card p{margin:0;color:var(--home-muted);font-size:.9rem;line-height:1.65}
-.mode-card .go-btn{margin-top:auto;padding:11px 18px;border:1px solid var(--home-text);border-radius:11px;background:var(--home-text)!important;color:var(--home-bg)!important;font:700 .9rem 'Quicksand',sans-serif;cursor:pointer;transition:transform .18s ease,opacity .18s ease}
-.mode-card .go-btn:hover{transform:translateY(-2px);opacity:.88}
-.privacy-note{margin:17px 0 0;padding:12px 14px;border:1px solid var(--home-line);border-radius:12px;background:var(--home-panel-soft);color:var(--home-muted);font-size:.79rem;line-height:1.55}
-.privacy-note strong{color:var(--home-text)}
-@media(max-width:720px){body{padding:0 0 76px}.home-main{padding:20px 18px 32px}#navStrip{inset:auto 0 0;width:100%;height:68px;flex-direction:row;justify-content:space-around;gap:3px;padding:7px 8px calc(7px + env(safe-area-inset-bottom));border-top:1px solid var(--home-line);border-right:0}.user-card{display:none}.nav-item{width:auto;min-width:0;min-height:46px;flex:1;flex-direction:column;justify-content:center;gap:3px;padding:5px 2px;border-radius:9px;font-size:.62rem}.nav-item svg{width:19px;height:19px}.home-topbar{margin-bottom:25px}.topbar-note{font-size:.72rem}}
-@media(max-width:540px){.mode-grid{grid-template-columns:1fr;gap:12px}.mode-card{min-height:220px;padding:19px}.mode-kicker{margin-bottom:14px}.home-main{padding-left:14px;padding-right:14px}.subtitle{margin-bottom:20px}}
-@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important}}
+    @import url('https://fonts.googleapis.com/css2?family=Shadows+Into+Light&display=swap');
+
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin:0; padding:0; }
+
+    body, html {
+        width: 100%; height: 100%;
+        background: #050200;
+        overflow: hidden;
+        font-family: 'Shadows Into Light', cursive;
+        color: white;
+    }
+
+    canvas {
+        position: fixed; top: 0; left: 0;
+        width: 100%; height: 100%;
+        z-index: 0;
+        pointer-events: none;
+    }
+
+    .wrapper {
+        position: absolute; top: 50%; left: 50%;
+        transform: translate(-50%, -50%);
+        width: 90%; max-width: 400px;
+        z-index: 10;
+        background: rgba(255,255,255,0.02);
+        backdrop-filter: blur(6px);
+        -webkit-backdrop-filter: blur(6px);
+        border-radius: 40px;
+        padding: 40px;
+        text-align: center;
+        border: 1px solid rgba(255,69,0,0.1);
+    }
+
+    /* Logo Styling */
+    .splash-logo { 
+        width: 180px; 
+        margin-bottom: 1rem; 
+        filter: drop-shadow(0 0 15px #ffaa00); 
+    }
+
+    p { font-size: 1.2rem; opacity:0.7; }
+
+    .btn {
+        padding: 0.8rem 2rem;
+        margin: 0.8rem;
+        border-radius: 50px;
+        font-size: 1.2rem;
+        border: 1px solid rgba(255,69,0,0.5);
+        background: transparent;
+        color: #ff4500;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    .btn:hover { background: #ff4500; color:#000; box-shadow:0 0 20px rgba(255,69,0,0.5); }
+
 </style>
+
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+
+<link rel="stylesheet" href="theme.css">
 </head>
 <body>
-<nav id="navStrip" aria-label="Main navigation">
-  <div class="user-card">
-    <div class="avatar" id="userAvatar" aria-hidden="true">W</div>
-    <div id="userInfo">Loading…</div>
-  </div>
-  <button class="nav-item" type="button" onclick="goToPage('search.html')" aria-label="Search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"></circle><path d="m16 16 5 5"></path></svg><span>Search</span></button>
-  <button class="nav-item" type="button" onclick="goToPage('notifications.html')" aria-label="Notifications"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"></path></svg><span>Activity</span></button>
-  <button class="nav-item" type="button" onclick="goToPage('message.html')" aria-label="Messages"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v12H9l-5 4z"></path><path d="M8 10h8M8 13h5"></path></svg><span>Messages</span></button>
-  <button class="nav-item" type="button" onclick="goToPage('profile.html')" aria-label="Profile"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4 21a8 8 0 0 1 16 0"></path></svg><span>Profile</span></button>
-  <button class="nav-item" type="button" onclick="goToPage('settings.html')" aria-label="Settings"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-1.7 2.9-.2-.1a1.7 1.7 0 0 0-1.8.1l-.2.1h-3.4l-.1-.2a1.7 1.7 0 0 0-1.5-1l-.2.1-2.9-1.7.1-.2a1.7 1.7 0 0 0-.1-1.8l-.1-.2v-3.4l.2-.1a1.7 1.7 0 0 0 1-1.5l-.1-.2 1.7-2.9.2.1a1.7 1.7 0 0 0 1.8-.1l.2-.1h3.4l.1.2a1.7 1.7 0 0 0 1.5 1l.2-.1 2.9 1.7-.1.2a1.7 1.7 0 0 0 .1 1.8l.1.2v3.4z"></path></svg><span>Settings</span></button>
-</nav>
-<main class="home-main">
-  <header class="home-topbar">
-    <a class="brand" href="enter.html" aria-label="WHISPR home"><span class="brand-mark" aria-hidden="true">W</span><span>WHISPR</span></a>
-    <span class="topbar-note">A quieter kind of social space</span>
-  </header>
-  <h1 class="welcome">Make room for what’s on your mind.</h1>
-  <p class="subtitle">Choose a quiet moment for yourself, or share a thought with the WHISPR community.</p>
-  <div class="mode-grid">
-    <section class="mode-card" aria-labelledby="breatheTitle">
-      <p class="mode-kicker">Just for you</p>
-      <h2 id="breatheTitle">Breathe</h2>
-      <p>A quiet space to slow down and let the thoughts you haven’t said out loud rise and pass. Put feelings into words without needing to make them perfect.</p>
-      <p class="privacy-note"><strong>Privacy note:</strong> Breathe thoughts are not saved or encrypted. Please don’t include personal or sensitive information.</p>
-      <button class="go-btn" type="button" onclick="goToPage('breathe.html')">Start breathing</button>
-    </section>
-    <section class="mode-card" aria-labelledby="whisperTitle">
-      <p class="mode-kicker">Open to everyone</p>
-      <h2 id="whisperTitle">Whisper</h2>
-      <p>Send a random thought into a shared space. Passersby can catch it, read it, and leave a reaction or an echo of their own.</p>
-      <button class="go-btn" type="button" onclick="goToPage('whisper.html')">Share a whisper</button>
-    </section>
-  </div>
-</main>
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyBSmm2lC7iAMmQJqsG_jXi4DWpL7ghcJnc",
-  authDomain: "whispr-92fc0.firebaseapp.com",
-  projectId: "whispr-92fc0",
-  storageBucket: "whispr-92fc0.firebasestorage.app",
-  messagingSenderId: "133594748424",
-  appId: "1:133594748424:web:7dc7ff44e105d2d5cee3bd"
-};
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+<canvas id="canvas"></canvas>
 
-window.goToPage = function(url) {
-  if (auth.currentUser) window.location.href = url;
-  else window.location.href = "login.html";
-};
+<div class="wrapper">
+    <img src="https://i.imgur.com/7vlpCCX.png" class="splash-logo" alt="Whispers Logo">
+    <p>Choose your path:</p>
+    <button class="btn" onclick="location.href='login.html'">Login</button>
+    <button class="btn" onclick="location.href='signup.html'">Create Account</button>
+    <button class="btn" onclick="location.href='passerby.html'">Passerby</button>
+</div>
 
-onAuthStateChanged(auth, async user => {
-  if (!user) {
-    window.location.href = "login.html";
-    return;
-  }
-  const info = document.getElementById("userInfo");
-  const avatar = document.getElementById("userAvatar");
-  let name = user.displayName || "Whisperer";
-  try {
-    const userDoc = await getDoc(doc(db, "users", user.uid));
-    if (userDoc.exists()) {
-      const data = userDoc.data();
-      name = data.username || data.displayName || name;
-      if (data.photoURL || data.photo) {
-        const image = document.createElement("img");
-        image.src = data.photoURL || data.photo;
-        image.alt = "";
-        avatar.replaceChildren(image);
-      }
+<script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+
+    let particles = [];
+    let mouse = { x: -1000, y: -1000, active: false };
+    const particleCount = 150;
+
+    function initCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
     }
-  } catch (error) {
-    console.warn("Could not load profile details", error);
-  }
-  info.textContent = name;
-  if (!avatar.querySelector("img")) avatar.textContent = (name.trim()[0] || "W").toUpperCase();
-});
+
+    class Particle {
+        constructor() { this.init(); }
+        init() {
+            this.x = Math.random() * canvas.width;
+            this.y = Math.random() * canvas.height;
+            this.size = Math.random()*3 + 1.5;
+            this.vx = (Math.random()-0.5)*1.2;
+            this.vy = (Math.random()-0.5)*1.2;
+            this.opacity = Math.random()*0.5 + 0.2;
+            this.angle = Math.random() * Math.PI * 2;
+        }
+        draw() {
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.size, 0, Math.PI*2);
+            ctx.fillStyle = `rgba(255,69,0,${this.opacity})`;
+            ctx.shadowBlur = 10;
+            ctx.shadowColor = "#ff4500";
+            ctx.fill();
+        }
+        update() {
+            this.x += this.vx + Math.sin(this.angle)*0.3;
+            this.y += this.vy + Math.cos(this.angle)*0.3;
+            this.angle += 0.01;
+
+            if(mouse.active){
+                let dx = mouse.x - this.x;
+                let dy = mouse.y - this.y;
+                let dist = Math.sqrt(dx*dx + dy*dy);
+                if(dist<350){
+                    let force = (350 - dist)/350;
+                    this.x += (dx/dist)*force*4.5;
+                    this.y += (dy/dist)*force*4.5;
+                }
+            }
+
+            if(this.x < -10) this.x = canvas.width+10;
+            if(this.x > canvas.width+10) this.x = -10;
+            if(this.y < -10) this.y = canvas.height+10;
+            if(this.y > canvas.height+10) this.y = -10;
+        }
+    }
+
+    function setup(){
+        particles = [];
+        for(let i=0;i<particleCount;i++) particles.push(new Particle());
+    }
+
+    function animate(){
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+        particles.forEach(p=>{p.update(); p.draw();});
+        requestAnimationFrame(animate);
+    }
+
+    function handleDown(e){
+        mouse.active = true;
+        mouse.x = e.touches ? e.touches[0].clientX : e.clientX;
+        mouse.y = e.touches ? h[0].clientY : e.clientY;
+    }
+    function handleMove(e){
+        mouse.x = e.touches ? e.touches[0].clientX : e.clientX;
+        mouse.y = e.touches ? e.touches[0].clientY : e.clientY;
+    }
+    function handleUp(){ mouse.active = false; }
+
+    window.addEventListener('mousedown', handleDown);
+    window.addEventListener('mousemove', handleMove);
+    window.addEventListener('mouseup', handleUp);
+    window.addEventListener('touchstart', handleDown);
+    window.addEventListener('touchmove', handleMove);
+    window.addEventListener('touchend', handleUp);
+    window.addEventListener('resize', initCanvas);
+
+    initCanvas();
+    setup();
+    animate();
+
 </script>
 <script src="theme.js" defer></script>
 </body>
