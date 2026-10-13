@@ -34,10 +34,10 @@ function makeChatItem(chat) {
   item.tabIndex = 0;
   const title = chat.isGroup ? (chat.groupName || "Group chat") : (chat.otherUsername || "Anonymous");
   const openChat = () => {
-    if (chat.isGroup) window.location.href = `chat.html?group=${encodeURIComponent(chat.conversationId)}`;
-    else window.location.href = `chat.html?uid=${encodeURIComponent(chat.otherUserId)}&name=${encodeURIComponent(title)}`;
+    if (chat.isGroup) window.location.href = `chat/index.html?group=${encodeURIComponent(chat.conversationId)}`;
+    else window.location.href = `chat/index.html?uid=${encodeURIComponent(chat.otherUserId)}&name=${encodeURIComponent(title)}`;
   };
-  const profileUrl = `other.html?uid=${encodeURIComponent(chat.otherUserId || "")}`;
+  const profileUrl = `other/index.html?uid=${encodeURIComponent(chat.otherUserId || "")}`;
   const avatar = chat.isGroup ? document.createElement("div") : document.createElement("a");
   avatar.className = "avatar-link";
   if (!chat.isGroup && chat.otherUserId) {
@@ -149,7 +149,7 @@ function makePersonItem(person) {
   const name = userDisplayName(person);
   const item = document.createElement("a");
   item.className = "chat-item";
-  item.href = `chat.html?uid=${encodeURIComponent(person.uid)}&name=${encodeURIComponent(name)}`;
+  item.href = `chat/index.html?uid=${encodeURIComponent(person.uid)}&name=${encodeURIComponent(name)}`;
   const avatar = document.createElement("span");
   avatar.className = "avatar-link";
   avatar.textContent = name.charAt(0).toUpperCase();
@@ -193,7 +193,7 @@ function conversationSort(a, b) {
 }
 
 onAuthStateChanged(auth, user => {
-  if (!user) { window.location.href = "login.html"; return; }
+  if (!user) { window.location.href = "login/index.html"; return; }
   activeUser = user;
   if (stopChats) stopChats();
   stopChats = onSnapshot(doc(db, "userChats", user.uid), async snapshot => {
@@ -255,7 +255,7 @@ searchInput.addEventListener("input", () => {
   renderChats();
   searchPeople(searchInput.value.trim());
 });
-document.getElementById("backBtn").addEventListener("click", () => window.whisprBack("enter.html"));
+document.getElementById("backBtn").addEventListener("click", () => window.whisprBack("enter/index.html"));
 document.getElementById("groupBtn").addEventListener("click", () => {
   groupModal.hidden = false;
   document.getElementById("groupName").focus();
@@ -306,7 +306,7 @@ document.getElementById("groupForm").addEventListener("submit", async event => {
         unreadCount: 0
       }
     }, { merge: true })));
-    window.location.href = `chat.html?group=${encodeURIComponent(groupId)}`;
+    window.location.href = `chat/index.html?group=${encodeURIComponent(groupId)}`;
   } catch (error) {
     console.error("Could not create group", error);
     groupStatus.textContent = error.message || "Could not create the group.";
