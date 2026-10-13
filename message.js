@@ -1,7 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { searchUsers, userDisplayName, userAvatar } from "./user-search.js";
-import { getFirestore, collection, doc, getDoc, setDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, doc, getDoc, setDoc, updateDoc, deleteField, FieldPath, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBSmm2lC7iAMmQJqsG_jXi4DWpL7ghcJnc",
@@ -74,10 +74,28 @@ function makeChatItem(chat) {
     badge.textContent = String(chat.unreadCount);
     name.appendChild(badge);
   }
-  item.append(avatar, info);
+  const deleteButton = document.createElement("button");
+  deleteButton.type = "button";
+  deleteButton.className = "delete-chat-btn";
+  deleteButton.textContent = "Delete";
+  deleteButton.setAttribute("aria-label", `Delete conversation with ${title}`);
+  deleteButton.addEventListener("click", async event => {
+    event.stopPropagation();
+    if (!activeUser || !window.confirm("Remove this conversation from your messages? It will not delete the messages or remove it for other people.")) return;
+    deleteButton.disabled = true;
+    try {
+      await updateDoc(doc(db, "userChats", activeUser.uid), new FieldPath(chat.conversationId), deleteField());
+      statusMessage.textContent = "Conversation removed from your messages.";
+    } catch (error) {
+      console.error("Could not delete conversation", error);
+      statusMessage.textContent = "Could not remove this conversation. Check your access permissions and try again.";
+      deleteButton.disabled = false;
+    }
+  });
+  item.append(avatar, info, deleteButton);
   item.addEventListener("click", openChat);
   item.addEventListener("keydown", event => {
-    if (event.target.closest("a")) return;
+    if (event.target.closest("a, button")) return;
     if (event.key === "Enter" || event.key === " ") { event.preventDefault(); openChat(); }
   });
   avatarImage.addEventListener("error", () => { avatarImage.hidden = true; });
@@ -193,7 +211,17 @@ searchInput.addEventListener("input", () => {
   renderChats();
   searchPeople(searchInput.value.trim());
 });
-document.getElementById("backBtn").addEventListener("click", () => window.whisprBack("enter.html"));
+document.getElementById("backBtn").addEventListener("click", () => {
+  try {
+    const previous = new URL(document.referrer);
+    const page = previous.pathname.split("/").pop().toLowerCase();
+    if (previous.origin === location.origin && history.length > 1 && !["index.html", "login.html", "signup.html"].includes(page)) {
+      history.back();
+      return;
+    }
+  } catch (_) {}
+  location.assign("enter.html");
+});
 document.getElementById("groupBtn").addEventListener("click", () => {
   groupModal.hidden = false;
   document.getElementById("groupName").focus();
