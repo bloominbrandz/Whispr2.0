@@ -247,6 +247,11 @@ body, html {
         </div>
     </div>
 
+    <div class="notifications-controls">
+        <button id="enableNotificationsBtn" type="button" aria-pressed="false">Enable sound &amp; alerts</button>
+        <span id="notificationStatus" role="status" aria-live="polite">Turn on alerts to hear about new activity while WHISPR is open.</span>
+    </div>
+
     <!-- Tabs -->
     <div class="tabs">
         <button class="tab active" onclick="showTab('all', this)">All</button>
@@ -302,6 +307,34 @@ const db = getFirestore(app);
 
 let currentUser = null;
 let unsubscribers = [];
+const alertsButton = document.getElementById("enableNotificationsBtn");
+const notificationStatus = document.getElementById("notificationStatus");
+
+function syncAlertButton() {
+    let soundOn = false;
+    try { soundOn = localStorage.getItem("whispr-notification-sound") === "on"; } catch (_) {}
+    alertsButton.setAttribute("aria-pressed", String(soundOn));
+    alertsButton.textContent = soundOn ? "Turn off sound" : "Enable sound & alerts";
+}
+syncAlertButton();
+alertsButton.addEventListener("click", async () => {
+    const soundOn = alertsButton.getAttribute("aria-pressed") !== "true";
+    try { localStorage.setItem("whispr-notification-sound", soundOn ? "on" : "off"); } catch (_) {}
+    syncAlertButton();
+    if (soundOn) window.whisprUnlockAudio?.();
+    let permission = "unsupported";
+    if (soundOn && "Notification" in window) {
+        try { permission = await Notification.requestPermission(); } catch (_) {}
+    }
+    notificationStatus.textContent = !soundOn
+        ? "Sound is off. Activity still appears in your WHISPR feed."
+        : permission === "granted"
+            ? "Sound is on. Browser alerts can appear when WHISPR is in the background."
+            : permission === "denied"
+                ? "Sound is on; browser alerts are blocked by your browser settings."
+                : "Sound is on while WHISPR is open. Browser alerts may need permission in your browser settings.";
+    if (soundOn && window.whisprNotify) window.whisprNotify("WHISPR alerts enabled", "You’ll hear a soft tone for new activity.");
+});
 
 window.showTab = function(tabName, btn) {
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -330,9 +363,12 @@ async function loadActivity() {
     let reactCount = 0, commentCount = 0;
     
     for(const w of whispers) {
+        let previousReactions = null;
         const reactionUnsubscribe = onSnapshot(doc(db, "whispers", w.id), async whisperSnap => {
             if (!whisperSnap.exists()) return;
             const latest = whisperSnap.data();
+            const oldReactions = previousReactions;
+            previousReactions = { ...(latest.reactions || {}) };
             const freshReactions = [];
             for (const [uid, type] of Object.entries(latest.reactions || {})) {
                 if (uid === currentUser.uid || !type) continue;
@@ -348,6 +384,9 @@ async function loadActivity() {
                 }
                 const action = type === "❤️" ? "liked your whisper" : `reacted ${type} to your whisper`;
                 freshReactions.push({ type: 'reaction', icon: type, text: `${actor} ${action}`, time: latest.timestamp || w.timestamp, whisper: latest.message || w.message, id: w.id });
+                if (oldReactions && oldReactions[uid] !== type) {
+                    window.whisprNotify?.("New reaction", `${actor} ${action}.`, { tag: `reaction-${w.id}-${uid}`, url: `whisper.html#${encodeURIComponent(w.id)}` });
+                }
             }
             const keepOther = item => item.id !== w.id || item.type !== 'reaction';
             all.splice(0, all.length, ...all.filter(keepOther), ...freshReactions);
@@ -358,7 +397,10 @@ async function loadActivity() {
         });
         unsubscribers.push(reactionUnsubscribe);
         
+        let initialCommentsSnapshot = true;
         const unsub = onSnapshot(query(collection(db, "whispers", w.id, "comments"), orderBy("timestamp", "desc")), snap => {
+            const isInitialSnapshot = initialCommentsSnapshot;
+            initialCommentsSnapshot = false;
             snap.docChanges().forEach(c => {
                 if(c.type === "added") {
                     const d = c.data();
@@ -368,6 +410,9 @@ async function loadActivity() {
                         const actor = d.from || "Someone";
                         const act = { type: 'comment', icon: '💬', text: `${actor} commented: ${truncate(d.text, 50)}`, time: d.timestamp, whisper: w.message, id: w.id };
                         all.push(act); comments.push(act);
+                        if (!isInitialSnapshot) {
+                            window.whisprNotify?.("New comment", `${actor} commented on your whisper.`, { tag: `comment-${c.doc.id}`, url: `whisper.html#${encodeURIComponent(w.id)}` });
+                        }
                         updateDisplay(all, reactions, comments, catches);
                     }
                 }
