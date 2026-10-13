@@ -126,7 +126,7 @@ async function initChat() {
     const targetName = otherSnap.exists() ? getName(profile, null) : otherName;
     const profileIdentity = document.getElementById("profileIdentity");
     const profileAvatar = document.getElementById("profileAvatar");
-    profileIdentity.href = `other.html?uid=${encodeURIComponent(otherUid)}`;
+    profileIdentity.href = `other/index.html?uid=${encodeURIComponent(otherUid)}`;
     profileIdentity.setAttribute("aria-label", `Visit ${targetName}'s profile`);
     document.getElementById("profileInitial").textContent = targetName.charAt(0).toUpperCase();
     profileAvatar.hidden = true;
@@ -176,7 +176,7 @@ function loadMessages() {
         const sender = document.createElement("a");
         sender.className = "sender-name";
         sender.textContent = message.senderName || "Member";
-        if (message.senderId) sender.href = `other.html?uid=${encodeURIComponent(message.senderId)}`;
+        if (message.senderId) sender.href = `other/index.html?uid=${encodeURIComponent(message.senderId)}`;
         bubble.appendChild(sender);
       }
       const text = document.createElement("span");
@@ -412,7 +412,7 @@ window.addEventListener("beforeunload", () => {
 });
 
 onAuthStateChanged(auth, async user => {
-  if (!user) { window.location.href = "login.html"; return; }
+  if (!user) { window.location.href = "login/index.html"; return; }
   currentUser = user;
   conversationId = groupId || (otherUid ? [user.uid, otherUid].sort().join("_") : "");
   try {
