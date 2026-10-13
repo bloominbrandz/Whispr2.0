@@ -1,4 +1,4 @@
-<!-- breathe.html - Enhanced with Firestore Integration -->
+<!-- breathe/index.html - Enhanced with Firestore Integration -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -303,7 +303,7 @@ const popupOverlay = document.getElementById('popupOverlay');
 const msg = document.getElementById('msg');
 
 // Event Listeners
-backBtn.addEventListener('click', () => window.whisprBack('enter.html'));
+backBtn.addEventListener('click', () => window.whisprBack('enter/index.html'));
 releaseBtn.addEventListener('click', releaseRant);
 
 // Message display helper
@@ -315,7 +315,7 @@ function showMessage(text, isError = true) {
 // Auth state listener - Get username and require login
 onAuthStateChanged(auth, async user => {
     if(!user) {
-        window.location.href = "login/index.html";
+        window.location.href = "login/index/index.html";
         return;
     }
     
