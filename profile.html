@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Profile | Whispers</title>
+<title>Profile | WHISPR</title>
 <link href="https://fonts.googleapis.com/css2?family=Shadows+Into+Light&family=Quicksand:wght@300;500&display=swap" rel="stylesheet">
 <style>
 /* EMBER ALERT */
@@ -461,6 +461,7 @@ body{
     color:#ffca99;
 }
 </style>
+<link rel="stylesheet" href="theme.css">
 </head>
 <body>
 
@@ -938,9 +939,8 @@ function escapeHtml(text) {
 }
 
 // Return button
-document.getElementById("returnBtn").addEventListener("click",()=>{
-    window.location.href="enter.html";
-});
+document.getElementById("returnBtn").addEventListener("click", () => window.whisprBack("enter.html"));
 </script>
+<script src="theme.js" defer></script>
 </body>
 </html>
